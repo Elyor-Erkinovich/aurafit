@@ -1,0 +1,28 @@
+{
+  "short_name": "AuraFit",
+  "name": "AuraFit — Калория ва АИ Диетолог",
+  "description": "Сунъий интеллект ёрдамида расмлардан калория аниқловчи ва шахсий балансни кузатувчи илова.",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#060a13",
+  "theme_color": "#060a13",
+  "display": "standalone",
+  "orientation": "portrait"
+}

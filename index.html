@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AuraFit — Калория, Машқ ва АИ Диетолог</title>
+  
+  <!-- SEO & PWA Meta Tags -->
+  <meta name="description" content="Сунъий интеллект ёрдамида расм ва штрих-коддан калория аниқловчи, машқлар ва вазн графикларини кузатувчи мукаммал тизим.">
+  <meta name="theme-color" content="#0a0e17">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Content Security Policy (CSP) for Enhanced API Key Protection -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://world.openfoodfacts.org https://*.openfoodfacts.org https://images.openfoodfacts.org; connect-src 'self' https://generativelanguage.googleapis.com https://world.openfoodfacts.org https://*.openfoodfacts.org; media-src 'self' data:; object-src 'none'; frame-ancestors 'none';">
+
+  <!-- Lucide Icons (Pinned v0.379.0 for Security & Offline Caching) -->
+  <script src="https://unpkg.com/lucide@0.379.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
+  
+  <!-- Chart.js CDN for Dynamic Progress Graphs (Pinned v4.4.2) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+
+  <!-- HTML5-QRCode CDN for Live Barcode Scanning (Pinned v2.3.8) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Glowing Elements -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Splash Screen / Welcome Wizard -->
+  <div id="welcome-wizard" class="wizard-overlay hidden">
+    <div class="wizard-container card">
+      <!-- Wizard Progress Bar -->
+      <div class="wizard-progress">
+        <div class="progress-bar-fill" id="wizard-progress-bar"></div>
+      </div>
+      
+      <!-- Wizard Step 1: Welcome -->
+      <div class="wizard-step active" data-step="1">
+        <div class="wizard-hero">
+          <div class="wizard-icon-wrapper">
+            <i data-lucide="sparkles" class="hero-icon animated-float"></i>
+          </div>
+          <h2 class="title-gradient">AuraFit-га Хуш Келибсиз!</h2>
+          <p class="subtitle">Соғлом турмуш тарзи, озиш, машқлар ва овқат таҳлили бўйича шахсий АИ диёрдамчингиз. Иловани бошлаш учун бир нечта маълумотларни киритинг.</p>
+          <div class="wizard-author-badge">
+            <i data-lucide="user"></i> Лойиҳа муаллифи: Саидкамолов Элёр
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-primary btn-block next-step">Бошлаш <i data-lucide="arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Wizard Step 2: Gemini API Key -->
+      <div class="wizard-step" data-step="2">
+        <div class="wizard-header">
+          <h3 class="title-gradient">АИ Диетолог Калити</h3>
+          <p class="subtitle">Овқат расмларини таҳлил қилиш ва АИ Диетолог чати билан суҳбатлашиш учун ўз Google Gemini API калитингизни киритинг. Бу калит хавфсиз тарзда фақат телефонингизда сақланади.</p>
+        </div>
+        <div class="form-group">
+          <label for="wizard-api-key">Gemini API Key</label>
+          <div class="password-wrapper">
+            <input type="password" id="wizard-api-key" placeholder="AIzaSy..." class="form-input">
+            <button type="button" class="btn-toggle-pass" id="toggle-wizard-key">
+              <i data-lucide="eye"></i>
+            </button>
+          </div>
+          <p class="help-text">Агар сизда калит бўлмаса, кейинроқ созламалардан киритишингиз мумкин.</p>
+        </div>
+        <div class="wizard-actions dual">
+          <button class="btn btn-secondary skip-step">Ўтказиш</button>
+          <button class="btn btn-primary next-step">Давом этиш <i data-lucide="arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Wizard Step 3: Bio Details -->
+      <div class="wizard-step" data-step="3">
+        <div class="wizard-header">
+          <h3 class="title-gradient">Ўзингиз Ҳақингизда</h3>
+          <p class="subtitle">Калория меъёрини аниқ ҳисоблаш учун шахсий кўрсаткичларингизни киритинг.</p>
+        </div>
+        
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Жинсингиз</label>
+            <div class="gender-selector">
+              <button type="button" class="gender-btn active" data-gender="male">
+                <i data-lucide="user"></i> Эркак
+              </button>
+              <button type="button" class="gender-btn" data-gender="female">
+                <i data-lucide="user-round"></i> Аёл
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="wizard-age">Ёшингиз</label>
+            <input type="number" id="wizard-age" class="form-input" placeholder="25" min="10" max="100">
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="wizard-weight">Вазнингиз (кг)</label>
+            <input type="number" id="wizard-weight" class="form-input" placeholder="70" step="0.1" min="30" max="250">
+          </div>
+          <div class="form-group">
+            <label for="wizard-height">Бўйингиз (см)</label>
+            <input type="number" id="wizard-height" class="form-input" placeholder="175" min="100" max="250">
+          </div>
+        </div>
+
+        <div class="wizard-actions">
+          <button class="btn btn-primary btn-block next-step">Кейингиси <i data-lucide="arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Wizard Step 4: Activity & Goal -->
+      <div class="wizard-step" data-step="4">
+        <div class="wizard-header">
+          <h3 class="title-gradient">Мақсадингиз</h3>
+          <p class="subtitle">Қандай натижага эришмоқчисиз ва кундалик фаоллигингиз қандай?</p>
+        </div>
+
+        <div class="form-group">
+          <label for="wizard-activity">Жисмоний Фаоллик</label>
+          <select id="wizard-activity" class="form-select">
+            <option value="1.2">Кам ҳаракат (Офис иши, машғулотларсиз)</option>
+            <option value="1.375">Енгил фаол (Ҳафтада 1-3 кун енгил машқлар)</option>
+            <option value="1.55" selected>Ўртача фаол (Ҳафтада 3-5 кун фаол спорт)</option>
+            <option value="1.725">Жуда фаол (Ҳафтада 6-7 кун оғир машқлар)</option>
+            <option value="1.9">Экстремал фаол (Ҳар куни спорт + оғир жисмоний меҳнат)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Асосий Мақсадингиз</label>
+          <div class="goal-selector">
+            <button type="button" class="goal-btn" data-goal="lose">
+              <div class="goal-btn-content">
+                <i data-lucide="trending-down"></i>
+                <span>Соғлом Озиш</span>
+                <small>-15% калория дефицити</small>
+              </div>
+            </button>
+            <button type="button" class="goal-btn active" data-goal="maintain">
+              <div class="goal-btn-content">
+                <i data-lucide="scale"></i>
+                <span>Вазнни Сақлаш</span>
+                <small>Оптимал калория баланси</small>
+              </div>
+            </button>
+            <button type="button" class="goal-btn" data-goal="gain">
+              <div class="goal-btn-content">
+                <i data-lucide="trending-up"></i>
+                <span>Соғлом Семириш</span>
+                <small>+15% калория ва мушак</small>
+              </div>
+            </button>
+            <button type="button" class="goal-btn" data-goal="recomp">
+              <div class="goal-btn-content">
+                <i data-lucide="zap"></i>
+                <span>Тана Рекомпозицияси</span>
+                <small>Ёғ эритиш + Мушак чиқариш (Оқсил 2.2г/кг)</small>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="wizard-actions">
+          <button class="btn btn-accent btn-block" id="finish-wizard">Ҳисоблаш ва Бошлаш <i data-lucide="check"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Container (Shows once wizard is done) -->
+  <div id="app-container" class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header header-glass">
+      <div class="header-logo">
+        <span class="logo-icon"><i data-lucide="activity"></i></span>
+        <div class="logo-text">
+          <h1>AuraFit</h1>
+          <span class="date-today" id="current-date">Душанба, 25-Май</span>
+        </div>
+      </div>
+      <div class="header-badge" id="header-goal-badge">
+        <i data-lucide="scale"></i> <span>Вазнни Сақлаш</span>
+      </div>
+    </header>
+
+    <!-- Main Screens -->
+    <main class="app-main-content">
+      
+      <!-- SCREEN 1: DASHBOARD (Home + Charts) -->
+      <section id="screen-dashboard" class="app-screen active">
+        <!-- Dashboard Summary Grid -->
+        <div class="dashboard-grid">
+          <!-- Calorie Ring Card -->
+          <div class="card calorie-ring-card">
+            <div class="calorie-progress-container">
+              <svg class="progress-ring" width="220" height="220">
+                <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
+                <circle class="progress-ring-bar" id="calorie-progress-bar" stroke="url(#blue-gradient)" stroke-width="12" stroke-linecap="round" fill="transparent" r="95" cx="110" cy="110"/>
+                
+                <!-- Define gradients in SVG -->
+                <defs>
+                  <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" />
+                    <stop offset="100%" stop-color="#0284c7" />
+                  </linearGradient>
+                  <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#047857" />
+                  </linearGradient>
+                  <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f97316" />
+                    <stop offset="100%" stop-color="#ea580c" />
+                  </linearGradient>
+                  <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#7e22ce" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="calorie-progress-text">
+                <span class="cal-remaining" id="cal-remaining-val">2,000</span>
+                <span class="cal-label">қолди</span>
+                <div class="cal-consumed-sub">
+                  <span id="cal-consumed-val">0</span> / <span id="cal-target-val">2,000</span> ккал
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Exercise budget details -->
+          <div class="dashboard-exercise-banner" id="dash-exercise-banner" style="display:none">
+            <span class="ex-banner-left"><i data-lucide="dumbbell"></i> Машқларда сарфланди:</span>
+            <span class="ex-banner-right" id="dash-burned-cal-lbl">+0 ккал</span>
+          </div>
+
+          <!-- BJU (Macronutrients) Glass Progress Bars -->
+          <div class="card bju-card">
+            <h3 class="card-title"><i data-lucide="pie-chart"></i> БЖУ Баланси</h3>
+            <div class="bju-progress-list">
+              <!-- Protein -->
+              <div class="bju-progress-item">
+                <div class="bju-info">
+                  <span class="bju-name"><span class="dot dot-protein"></span> Оқсил (Protein)</span>
+                  <span class="bju-stats"><b id="p-current">0</b> / <span id="p-target">120</span> г</span>
+                </div>
+                <div class="bju-bar-container">
+                  <div class="bju-bar-fill protein-fill" id="p-bar-fill" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Fat -->
+              <div class="bju-progress-item">
+                <div class="bju-info">
+                  <span class="bju-name"><span class="dot dot-fat"></span> Ёғ (Fat)</span>
+                  <span class="bju-stats"><b id="f-current">0</b> / <span id="f-target">65</span> г</span>
+                </div>
+                <div class="bju-bar-container">
+                  <div class="bju-bar-fill fat-fill" id="f-bar-fill" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Carbs -->
+              <div class="bju-progress-item">
+                <div class="bju-info">
+                  <span class="bju-name"><span class="dot dot-carb"></span> Углевод (Carb)</span>
+                  <span class="bju-stats"><b id="c-current">0</b> / <span id="c-target">230</span> г</span>
+                </div>
+                <div class="bju-bar-container">
+                  <div class="bju-bar-fill carb-fill" id="c-bar-fill" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Water Tracker -->
+        <div class="card water-card">
+          <div class="water-header">
+            <div>
+              <h3 class="card-title"><i data-lucide="droplet" class="water-icon"></i> Сув Баланси</h3>
+              <p class="card-subtitle">Кунлик меъёр: 2.5 литр</p>
+            </div>
+            <div class="water-progress-text">
+              <span id="water-current-val">0</span> / <span id="water-target-val">2500</span> мл
+            </div>
+          </div>
+          
+          <div class="water-visualizer">
+            <div class="water-cup">
+              <div class="water-fill-wave" id="water-cup-fill" style="height: 0%"></div>
+              <div class="water-overlay-percent" id="water-percent-txt">0%</div>
+            </div>
+            
+            <div class="water-actions-grid">
+              <button class="btn btn-water-quick" data-ml="250">
+                <i data-lucide="plus"></i> 250 мл
+              </button>
+              <button class="btn btn-water-quick" data-ml="500">
+                <i data-lucide="plus"></i> 500 мл
+              </button>
+              <button class="btn btn-water-reset" id="reset-water" title="Тозалаш">
+                <i data-lucide="refresh-cw"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- NEW: Smart Water Alarm Timer Countdown -->
+          <div class="water-timer-display" id="water-alarm-timer-container">
+            <span class="timer-lbl"><i data-lucide="bell-ring" class="timer-bell-icon"></i> Кейинги сув вақти:</span>
+            <span class="timer-clock" id="water-timer-clock-val">02:00:00</span>
+          </div>
+          
+          <!-- In-app Notification Toggle inside Water tracker -->
+          <div class="water-notification-toggle">
+            <button class="btn btn-secondary btn-block btn-sm" id="btn-request-notifications">
+              <i data-lucide="bell"></i> Сув ва овқат эслатмаларини ёқиш
+            </button>
+          </div>
+        </div>
+
+        <!-- Today Quick Summary & Manual Add Trigger -->
+        <div class="dashboard-actions">
+          <button class="btn btn-primary flex-1 shadow-glow" id="btn-trigger-add-food">
+            <i data-lucide="plus-circle"></i> Овқат қўшиш
+          </button>
+          <button class="btn btn-accent flex-1 shadow-glow" id="btn-trigger-ai-camera">
+            <i data-lucide="scan"></i> АИ билан Сканерлаш
+          </button>
+        </div>
+
+        <!-- WEIGHT PROGRESS CARD & DYNAMIC CHARTS -->
+        <div class="card trends-card">
+          <h3 class="card-title"><i data-lucide="line-chart"></i> Вазн ва Прогресс Кундалиги</h3>
+          <p class="card-subtitle">Вазн ўзгаришини ва кундалик калорияларни кузатиб боринг.</p>
+          
+          <!-- Quick Log Weight Form -->
+          <div class="weight-log-row">
+            <input type="number" id="input-quick-weight" class="form-input" placeholder="Бугунги вазн (кг)" step="0.1">
+            <button class="btn btn-primary btn-sm" id="btn-save-quick-weight">Сақлаш</button>
+          </div>
+
+          <!-- Charts Toggles -->
+          <div class="chart-toggles-row">
+            <button class="btn btn-secondary btn-sm flex-1 active" id="btn-show-weight-chart">Вазн Графиги</button>
+            <button class="btn btn-secondary btn-sm flex-1" id="btn-show-cal-chart">Калория Графиги</button>
+          </div>
+
+          <!-- Canvas Containers -->
+          <div class="chart-canvas-box" id="weight-chart-box">
+            <canvas id="weight-trend-canvas"></canvas>
+          </div>
+          <div class="chart-canvas-box hidden" id="cal-chart-box">
+            <canvas id="cal-trend-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: SCANNER (AI Vision + Barcode) -->
+      <section id="screen-scanner" class="app-screen">
+        <div class="scanner-screen-tabs">
+          <button class="scanner-tab-btn active" id="tab-btn-vision" data-target="scanner-vision-panel">
+            <i data-lucide="image"></i> АИ Расм Сканер
+          </button>
+          <button class="scanner-tab-btn" id="tab-btn-barcode" data-target="scanner-barcode-panel">
+            <i data-lucide="barcode"></i> Штрих-код Сканер
+          </button>
+        </div>
+
+        <!-- PANEL 2A: AI VISION SCANNER -->
+        <div class="scanner-panel active" id="scanner-vision-panel">
+          <div class="card camera-card">
+            <h3 class="card-title"><i data-lucide="sparkles" class="text-gradient"></i> АИ Овқат Таҳлили</h3>
+            <p class="card-subtitle">Овқат расмини юкланг ёки олиб юборинг, сунъий интеллект калорияларини ҳисоблайди.</p>
+            
+            <div class="upload-dropzone" id="camera-dropzone">
+              <input type="file" id="camera-file-input" accept="image/*" class="hidden">
+              <div class="dropzone-content" id="dropzone-prompt">
+                <div class="camera-icon-wrapper">
+                  <i data-lucide="image-plus" class="upload-icon"></i>
+                </div>
+                <span class="upload-text">Расм юклаш ёки Камерани очиш</span>
+                <span class="upload-subtext">Овқат суратини танланг</span>
+              </div>
+              
+              <div class="image-preview-container hidden" id="image-preview-box">
+                <img src="" alt="Овқат расми" id="captured-image-view" class="preview-img">
+                <button type="button" class="btn-clear-img" id="btn-remove-preview">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="warning-banner hidden" id="api-key-missing-warning">
+              <i data-lucide="alert-triangle"></i>
+              <div>
+                <b>Gemini API Калити Киритилмаган!</b>
+                <p>АИ имкониятларидан тўлиқ фойдаланиш учун созламалардан ўз API калитингизни киритинг.</p>
+                <button class="btn btn-warning-link" id="link-to-settings-key">Ҳозир киритиш <i data-lucide="arrow-right"></i></button>
+              </div>
+            </div>
+
+            <div class="camera-actions" id="scanner-actions-row">
+              <button class="btn btn-secondary" id="btn-select-file">
+                <i data-lucide="image"></i> Галерея
+              </button>
+              <button class="btn btn-primary" id="btn-start-analysis" disabled>
+                <i data-lucide="sparkles"></i> АИ Таҳлил Бошлаш
+              </button>
+            </div>
+            
+            <div class="analysis-loading hidden" id="analysis-loading-box">
+              <div class="radar-container">
+                <div class="radar-sweep"></div>
+                <div class="radar-circle circle-1"></div>
+                <div class="radar-circle circle-2"></div>
+                <i data-lucide="sparkles" class="loading-sparkle-icon"></i>
+              </div>
+              <span class="loading-status-text" id="loading-status-msg">Сунъий интеллект таҳлил қилмоқда...</span>
+              <p class="loading-substatus">Овқат калорияси ва БЖУ ҳисобланмоқда</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2B: BARCODE SCANNER (Open Food Facts) -->
+        <div class="scanner-panel" id="scanner-barcode-panel">
+          <div class="card barcode-card">
+            <h3 class="card-title"><i data-lucide="barcode" class="text-gradient"></i> Маҳсулот Штрих-коди</h3>
+            <p class="card-subtitle">Дўкондан сотиб олинган маҳсулотнинг штрих-кодини камера орқали сканерланг.</p>
+            
+            <!-- Live Barcode Camera Viewport -->
+            <div class="barcode-camera-box">
+              <div id="barcode-reader-viewport"></div>
+              <div class="barcode-target-laser"></div>
+            </div>
+            
+            <!-- Manual input if camera fails -->
+            <div class="barcode-manual-row">
+              <input type="text" id="input-manual-barcode" class="form-input" placeholder="Штрих-код рақамларини ёзинг...">
+              <button class="btn btn-secondary" id="btn-submit-manual-barcode"><i data-lucide="search"></i></button>
+            </div>
+            
+            <div class="barcode-actions-row">
+              <button class="btn btn-primary btn-block" id="btn-toggle-barcode-scanner">Камерани Ёқиш</button>
+            </div>
+            
+            <!-- Loading scanner state -->
+            <div class="barcode-loading-box hidden" id="barcode-loading-indicator">
+              <div class="radar-container small">
+                <div class="radar-sweep"></div>
+                <i data-lucide="loader" class="loading-sparkle-icon animate-spin"></i>
+              </div>
+              <span>Маҳсулот базадан қидирилмоқда...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: AI CHAT (Gemini Dietitian & Custom Meal Planner Recipes) -->
+      <section id="screen-chat" class="app-screen">
+        <!-- Sub Tabs for Chat and AI Chef -->
+        <div class="chat-screen-tabs">
+          <button class="chat-tab-btn active" id="chat-tab-btn-message" data-target="chat-message-panel">
+            <i data-lucide="message-circle"></i> АИ Чат
+          </button>
+          <button class="chat-tab-btn" id="chat-tab-btn-chef" data-target="chat-chef-panel">
+            <i data-lucide="soup"></i> АИ Ошпаз
+          </button>
+        </div>
+
+        <!-- PANEL 3A: INTERACTIVE DIETITIAN CHAT -->
+        <div class="chat-panel active" id="chat-message-panel">
+          <div class="chat-screen-container card">
+            <!-- Chat Header -->
+            <div class="chat-profile-header">
+              <div class="chat-avatar-wrapper">
+                <div class="chat-ai-avatar" id="chat-ai-avatar-icon">
+                  <i data-lucide="bot"></i>
+                </div>
+                <span class="chat-online-dot"></span>
+              </div>
+              <div class="chat-profile-details">
+                <h4 id="chat-ai-title">AuraFit АИ Диетолог</h4>
+                <p id="chat-ai-subtitle">Нутрициолог ва овқатланиш бўйича маслаҳатчи</p>
+              </div>
+              
+              <!-- AI Coach Switcher -->
+              <div class="chat-coach-selector">
+                <select id="select-ai-coach" class="form-select select-sm-coach">
+                  <option value="dietitian" selected>🥗 АИ Диетолог</option>
+                  <option value="trainer">🏋️‍♂️ АИ Мураббий</option>
+                </select>
+              </div>
+
+              <button class="btn-clear-chat" id="btn-reset-chat-history" title="Чатни тозалаш">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+
+            <!-- Message Area -->
+            <div class="chat-messages-box no-scrollbar" id="chat-messages-container">
+              <!-- Initial AI Greeting Message -->
+              <div class="chat-msg ai-msg">
+                <div class="msg-bubble">
+                  Ассалому алайкум! Мен сизнинг AuraFit шахсий АИ диетологингизман. Соғлом овқатланиш, озиш ёки машқлар режангиз ҳақида исталган саволингизни беришингиз мумкин. Бугунги калорияларингиз билан қизиқмоқчимисиз?
+                </div>
+                <span class="msg-time">Ҳозир</span>
+              </div>
+            </div>
+
+            <!-- Chat Input Row -->
+            <div class="chat-input-panel">
+              <textarea id="chat-input-text" class="chat-textarea" placeholder="Диетологга савол беринг..." rows="1"></textarea>
+              <button class="btn-send-message" id="btn-send-chat-msg" disabled>
+                <i data-lucide="send"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 3B: AI MEAL PLANNER & RECIPE HUB -->
+        <div class="chat-panel" id="chat-chef-panel">
+          <div class="chat-chef-container card">
+            <h3 class="card-title"><i data-lucide="chef-hat" class="text-gradient"></i> АИ Ошпаз ва Рецептлар</h3>
+            <p class="card-subtitle">Сизнинг қолган калория ва БЖУ миқдорингизга мос таом яратиш ёки музлатгичингизда бор маҳсулотлардан фойдаланиш бўйича шахсий ошпазингиз.</p>
+            
+            <!-- Section 1: Optimal calorie recipe generator -->
+            <div class="chef-section">
+              <h4 class="form-sub-title"><i data-lucide="sparkles"></i> 1. Кунлик Оптимал Рецепт</h4>
+              <p class="help-text" style="margin-bottom:10px">Бугун ейишингиз қолган калория ва оқсилингизга 100% мос келувчи таом.</p>
+              <div class="chef-meals-selector">
+                <button class="btn btn-secondary btn-sm active" data-meal-type="Breakfast">Нонушта</button>
+                <button class="btn btn-secondary btn-sm" data-meal-type="Lunch">Тушлик</button>
+                <button class="btn btn-secondary btn-sm" data-meal-type="Dinner">Кечки овқат</button>
+              </div>
+              <button class="btn btn-primary btn-block mt-10" id="btn-generate-ai-recipe">
+                <i data-lucide="sparkles"></i> Оптимал Рецепт Яратиш
+              </button>
+            </div>
+
+            <!-- Section 2: Fridge Ingredient Scanner -->
+            <div class="chef-section mt-10" style="border-top:1px solid rgba(255,255,255,0.06); padding-top:15px">
+              <h4 class="form-sub-title"><i data-lucide="refrigerator" style="color:var(--accent-green)"></i> 2. Музлатгичда Нима Бор?</h4>
+              <p class="help-text" style="margin-bottom:10px">Уйингизда бор бўлган маҳсулотларни ёзинг, АИ улардан соғлом рецепт чиқариб беради.</p>
+              <div class="form-group">
+                <input type="text" id="input-fridge-ingredients" class="form-input" placeholder="Масалан: товуқ гўшти, тухум, помидор, қатиқ">
+              </div>
+              <button class="btn btn-accent btn-block" id="btn-generate-fridge-recipe">
+                <i data-lucide="soup"></i> Бор Маҳсулотлардан Пишириш
+              </button>
+            </div>
+
+            <!-- Recipe Generation Loading Status -->
+            <div class="chef-loading-box hidden" id="chef-recipe-loader">
+              <div class="radar-container small">
+                <div class="radar-sweep"></div>
+                <i data-lucide="chef-hat" class="loading-sparkle-icon animate-spin"></i>
+              </div>
+              <span id="chef-loader-status-txt">АИ ошпаз овқат режалаштирмоқда...</span>
+            </div>
+
+            <!-- Recipe Output Panel Box -->
+            <div class="recipe-output-card card-subpanel hidden" id="chef-recipe-output-box">
+              <h3 class="recipe-output-title" id="recipe-out-title">Сабзавотли Товуқ Фитнес</h3>
+              
+              <div class="recipe-out-macros-grid">
+                <div class="macro-badge bg-primary-glass"><b id="recipe-out-cal">320</b> ккал</div>
+                <div class="macro-badge bg-protein-glass">P: <b id="recipe-out-p">25</b>г</div>
+                <div class="macro-badge bg-fat-glass">F: <b id="recipe-out-f">8</b>г</div>
+                <div class="macro-badge bg-carb-glass">C: <b id="recipe-out-c">15</b>г</div>
+              </div>
+
+              <div class="recipe-out-content mt-10">
+                <h5 class="recipe-sec-header"><i data-lucide="list"></i> Маҳсулотлар:</h5>
+                <ul class="recipe-out-list" id="recipe-out-ingredients-list">
+                  <!-- JS populated -->
+                </ul>
+
+                <h5 class="recipe-sec-header mt-10"><i data-lucide="chef-hat"></i> Тайёрланиш босқичлари:</h5>
+                <p class="recipe-out-steps-txt" id="recipe-out-instructions-txt">
+                  Маҳсулотларни тўғранг ва оловга қўйинг.
+                </p>
+              </div>
+
+              <button class="btn btn-accent btn-block mt-10" id="btn-log-chef-recipe-to-diary">
+                <i data-lucide="check-check"></i> Едим (Кундаликка Қўшиш)
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: WORKOUTS (Exercise & MET) -->
+      <section id="screen-workout" class="app-screen">
+        <div class="workout-screen-container">
+          <!-- Burned Calories Card -->
+          <div class="card workout-burned-card">
+            <div class="workout-ring-display">
+              <i data-lucide="dumbbell" class="workout-ring-icon animated-float"></i>
+              <div class="workout-cal-text">
+                <span class="workout-cal-num" id="workout-total-burned-val">0</span>
+                <span class="workout-cal-lbl">Ккал Сарфланди</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Exercise Logger -->
+          <div class="card add-workout-card">
+            <h3 class="card-title"><i data-lucide="plus-circle"></i> Машқ Қўшиш</h3>
+            <form id="form-log-workout">
+              <div class="form-group">
+                <label for="workout-select-type">Машқ Тури (Илмий MET)</label>
+                <select id="workout-select-type" class="form-select">
+                  <option value="8.0" selected>Югуриш (Running, ~8.0 MET)</option>
+                  <option value="6.0">Сузиш (Swimming, ~6.0 MET)</option>
+                  <option value="5.0">Куч машқлари (Strength Training, ~5.0 MET)</option>
+                  <option value="5.5">Велосипед ҳайдаш (Cycling, ~5.5 MET)</option>
+                  <option value="3.8">Тез юриш (Fast Walking, ~3.8 MET)</option>
+                  <option value="2.5">Йога ва чўзилиш (Yoga/Stretching, ~2.5 MET)</option>
+                  <option value="4.5">Рақс тушиш (Dancing, ~4.5 MET)</option>
+                </select>
+              </div>
+              
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="workout-input-duration">Давомийлиги (минут)</label>
+                  <input type="number" id="workout-input-duration" class="form-input" placeholder="30" required min="1" max="300">
+                </div>
+                <div class="form-group">
+                  <label>Баҳоланган Сарф</label>
+                  <div class="exercise-preview-cal" id="workout-burn-preview">~0 ккал</div>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-accent btn-block">Машқни Қўшиш <i data-lucide="plus"></i></button>
+            </form>
+          </div>
+
+          <!-- Today's Exercise List -->
+          <div class="workout-list-card card">
+            <h3 class="card-title"><i data-lucide="list"></i> Бугунги Машқлар</h3>
+            <div class="empty-state" id="workout-empty-state">
+              <i data-lucide="dumbbell" class="empty-icon"></i>
+              <h4>Ҳали машқ бажармадингизми?</h4>
+              <p>Жисмоний машқларни қўшинг ва кунлик овқатланиш бюджетингизни кенгайтиринг.</p>
+            </div>
+            
+            <div class="workout-items-list hidden" id="workout-items-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: CONFIG & DIARY (Combined settings) -->
+      <section id="screen-settings" class="app-screen">
+        <div class="settings-screen-container">
+          
+          <!-- Today Food Diary -->
+          <div class="card diary-section-card">
+            <div class="diary-header-row">
+              <h3 class="card-title"><i data-lucide="notebook"></i> Бугунги Кундалик</h3>
+              <button class="btn btn-secondary btn-sm" id="btn-clear-diary-today" title="Тозалаш">
+                <i data-lucide="trash-2"></i> Тозалаш
+              </button>
+            </div>
+
+            <!-- Total nutrition summary card for the day -->
+            <div class="diary-summary-card">
+              <div class="diary-sum-grid">
+                <div class="sum-item">
+                  <span class="sum-label">Овқатлар</span>
+                  <span class="sum-value" id="diary-sum-cal">0 <small>ккал</small></span>
+                </div>
+                <div class="sum-item">
+                  <span class="sum-label">Оқсил</span>
+                  <span class="sum-value text-protein" id="diary-sum-p">0<small>г</small></span>
+                </div>
+                <div class="sum-item">
+                  <span class="sum-label">Ёғ</span>
+                  <span class="sum-value text-fat" id="diary-sum-f">0<small>г</small></span>
+                </div>
+                <div class="sum-item">
+                  <span class="sum-label">Углевод</span>
+                  <span class="sum-value text-carb" id="diary-sum-c">0<small>г</small></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- List of meals -->
+            <div class="diary-list-container mt-10">
+              <div class="empty-state" id="diary-empty-state">
+                <i data-lucide="utensils" class="empty-icon"></i>
+                <h4>Овқат қўшилмаган</h4>
+                <p>Бот билан расм орқали ёки мануал тарзда овқат қўшинг.</p>
+              </div>
+              
+              <div class="diary-meals-list hidden" id="diary-meals-list-container">
+                <!-- Dynamically populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- NEW: BMI & IDEAL WEIGHT ANALYZER CARD -->
+          <div class="card bmi-analyzer-card">
+            <h3 class="card-title"><i data-lucide="activity"></i> ТМИ ва Саломатлик Баҳоси</h3>
+            <p class="card-subtitle">Жаҳон соғлиқни сақлаш ташкилоти (ЖССТ) стандартлари бўйича тана массаси индекси ва соғлом идеал вазн чегарангиз.</p>
+            
+            <div class="bmi-main-row">
+              <div class="bmi-circle-score">
+                <span class="bmi-score-num" id="profile-bmi-score-val">0.0</span>
+                <span class="bmi-score-lbl">ТМИ (BMI)</span>
+              </div>
+              <div class="bmi-score-details">
+                <h4 class="bmi-status-text" id="profile-bmi-status-txt">Аниқланмоқда...</h4>
+                <p class="bmi-ideal-weight-desc">Сизнинг бўйингиз учун идеал вазн: <b id="profile-ideal-weight-range-txt">0.0 - 0.0 кг</b></p>
+              </div>
+            </div>
+
+            <!-- Interactive Visual Neon Scale Gauge -->
+            <div class="bmi-scale-wrapper">
+              <div class="bmi-scale-bar">
+                <div class="scale-segment seg-under">Кам вазн</div>
+                <div class="scale-segment seg-normal">Нормал</div>
+                <div class="scale-segment seg-over">Ортиқча</div>
+                <div class="scale-segment seg-obese">Семириш</div>
+              </div>
+              <!-- Pointer Indicator pin -->
+              <div class="bmi-scale-pointer" id="profile-bmi-pointer" style="left: 0%">
+                <div class="pointer-arrow"></div>
+                <div class="pointer-glow"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Card -->
+          <div class="card profile-info-card">
+            <div class="profile-header-main">
+              <div class="profile-avatar">
+                <i data-lucide="user"></i>
+              </div>
+              <div>
+                <h3 class="profile-name" id="profile-name-txt">Фойдаланувчи</h3>
+                <span class="profile-goal-desc" id="profile-goal-txt">Мақсад: Вазнни Сақлаш</span>
+              </div>
+            </div>
+            
+            <div class="profile-stats-grid">
+              <div class="p-stat-item">
+                <span class="p-stat-lbl">Бўй</span>
+                <span class="p-stat-val" id="profile-height-txt">175 <small>см</small></span>
+              </div>
+              <div class="p-stat-item border-x">
+                <span class="p-stat-lbl">Вазн</span>
+                <span class="p-stat-val" id="profile-weight-txt">72 <small>кг</small></span>
+              </div>
+              <div class="p-stat-item">
+                <span class="p-stat-lbl">TDEE</span>
+                <span class="p-stat-val" id="profile-tdee-txt">2350 <small>ккал</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuration options -->
+          <div class="card settings-actions-card">
+            <h3 class="card-title"><i data-lucide="sliders"></i> Илова Созламалари</h3>
+            
+            <!-- Edit Profile Parameters Trigger -->
+            <button class="btn btn-setting-item" id="btn-edit-profile">
+              <span class="setting-item-left">
+                <i data-lucide="user-cog"></i>
+                <span>Маълумотларни таҳрирлаш</span>
+              </span>
+              <i data-lucide="chevron-right" class="setting-chevron"></i>
+            </button>
+
+            <!-- Gemini API key input -->
+            <div class="setting-collapsible">
+              <div class="setting-collapsible-header">
+                <span class="setting-item-left">
+                  <i data-lucide="key"></i>
+                  <span>Google Gemini API калити</span>
+                </span>
+                <span class="key-status-indicator text-success" id="api-key-status-indicator">
+                  <span class="status-dot"></span> Созланган
+                </span>
+              </div>
+              <div class="setting-collapsible-body">
+                <p class="help-text">АИ Чат, АИ Ошпаз ва Калория аниқлагич ишлаши учун Gemini API калитингизни киритинг.</p>
+                <div class="form-group mt-10">
+                  <div class="password-wrapper">
+                    <input type="password" id="settings-api-key" placeholder="AIzaSy..." class="form-input">
+                    <button type="button" class="btn-toggle-pass" id="toggle-settings-key">
+                      <i data-lucide="eye"></i>
+                    </button>
+                  </div>
+                  <button class="btn btn-primary btn-sm mt-10" id="btn-save-settings-key">Калитни Сақлаш</button>
+                  <a href="https://aistudio.google.com/" target="_blank" class="link-external mt-10 inline-block">
+                    <i data-lucide="external-link"></i> Бепул Gemini API калитини олиш
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Reset App Option -->
+            <button class="btn btn-setting-item btn-danger-text" id="btn-reset-app">
+              <span class="setting-item-left">
+                <i data-lucide="log-out"></i>
+                <span>Дастурни бутунлай тозалаш</span>
+              </span>
+            </button>
+          </div>
+
+          <!-- Sleek Premium Authorship Footer Signature -->
+          <footer class="app-authorship-footer">
+            <div class="footer-divider"></div>
+            <p class="footer-title">AuraFit</p>
+            <p class="footer-author"><i data-lucide="sparkles"></i> Лойиҳа муаллифи: <b>Саидкамолов Элёр</b></p>
+            
+            <div class="footer-contacts">
+              <a href="https://t.me/elyor_erkinovich" target="_blank" class="contact-link" title="Telegram">
+                <i data-lucide="send"></i> <span>@elyor_erkinovich</span>
+              </a>
+              <a href="https://instagram.com/erkinovic_elyor" target="_blank" class="contact-link" title="Instagram">
+                <i data-lucide="instagram"></i> <span>@erkinovic_elyor</span>
+              </a>
+              <a href="mailto:Reyunitedkings@gmail.com" class="contact-link" title="Email">
+                <i data-lucide="mail"></i> <span>Reyunitedkings@gmail.com</span>
+              </a>
+              <a href="tel:+998903222337" class="contact-link" title="Telefon">
+                <i data-lucide="phone"></i> <span>+998 90 322 2337</span>
+              </a>
+            </div>
+
+            <p class="footer-version">Версия: 1.5.0 (AI-Premium Edition)</p>
+            <p class="footer-copy">© 2026. Барча ҳуқуқлар ҳимояланган.</p>
+          </footer>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="app-nav nav-glass">
+      <button class="nav-item active" data-target="screen-dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Асосий</span>
+      </button>
+      <button class="nav-item" data-target="screen-scanner">
+        <i data-lucide="scan"></i>
+        <span>Сканер</span>
+      </button>
+      <button class="nav-item" data-target="screen-chat">
+        <i data-lucide="message-square"></i>
+        <span>АИ Чат</span>
+      </button>
+      <button class="nav-item" data-target="screen-workout">
+        <i data-lucide="dumbbell"></i>
+        <span>Машқлар</span>
+      </button>
+      <button class="nav-item" data-target="screen-settings">
+        <i data-lucide="settings"></i>
+        <span>Созламалар</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL: MANUAL ADD FOOD -->
+  <div id="modal-add-food" class="modal-overlay hidden">
+    <div class="modal-container card">
+      <div class="modal-header">
+        <h3 class="modal-title">Овқат Маълумотларини Киритинг</h3>
+        <button class="modal-close" id="btn-close-add-food-modal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-manual-add-food">
+          <div class="form-group">
+            <label for="food-input-name">Овқат ёки маҳсулот номи</label>
+            <input type="text" id="food-input-name" class="form-input" placeholder="Масалан: Ош, Лағмон, Банан" required>
+          </div>
+          
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="food-input-cal">Калорияси (ккал)</label>
+              <input type="number" id="food-input-cal" class="form-input" placeholder="350" required min="0">
+            </div>
+            <div class="form-group">
+              <label for="food-input-weight">Вазни (граммда)</label>
+              <input type="number" id="food-input-weight" class="form-input" placeholder="250" min="0">
+            </div>
+          </div>
+          
+          <h4 class="form-sub-title"><i data-lucide="pie-chart"></i> Макронутриентлар (БЖУ) — Ихтиёрий</h4>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label for="food-input-p">Оқсил (г)</label>
+              <input type="number" id="food-input-p" class="form-input" placeholder="12" min="0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label for="food-input-f">Ёғ (г)</label>
+              <input type="number" id="food-input-f" class="form-input" placeholder="10" min="0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label for="food-input-c">Углевод (г)</label>
+              <input type="number" id="food-input-c" class="form-input" placeholder="45" min="0" step="0.1">
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-add-food">Бекор қилиш</button>
+            <button type="submit" class="btn btn-primary">Қўшиш <i data-lucide="plus"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AI ANALYSIS RESULTS -->
+  <div id="modal-ai-result" class="modal-overlay hidden">
+    <div class="modal-container card ai-result-modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title title-gradient"><i data-lucide="sparkles"></i> АИ Таҳлил Натижаси</h3>
+        <button class="modal-close" id="btn-close-ai-modal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Detected food image inside results -->
+        <div class="result-image-box" id="ai-result-image-container">
+          <img src="" id="ai-result-image-view" class="result-box-img" alt="Скан қилинган овқат">
+        </div>
+
+        <div class="result-section">
+          <div class="detected-title-container">
+            <span class="detected-lbl">Аниқланган овқат:</span>
+            <h2 id="ai-food-name" class="detected-title">Ош (Плов)</h2>
+          </div>
+          
+          <!-- Large Calorie Display -->
+          <div class="ai-cal-display">
+            <div class="ai-cal-num" id="ai-calories">450</div>
+            <div class="ai-cal-lbl">Ккал</div>
+          </div>
+        </div>
+
+        <!-- BJU Grid -->
+        <div class="ai-bju-grid">
+          <div class="ai-bju-item bg-protein-glass">
+            <span class="ai-bju-lbl">Оқсил (P)</span>
+            <span class="ai-bju-val" id="ai-protein">15г</span>
+          </div>
+          <div class="ai-bju-item bg-fat-glass">
+            <span class="ai-bju-lbl">Ёғ (F)</span>
+            <span class="ai-bju-val" id="ai-fat">18г</span>
+          </div>
+          <div class="ai-bju-item bg-carb-glass">
+            <span class="ai-bju-lbl">Углевод (C)</span>
+            <span class="ai-bju-val" id="ai-carbs">55г</span>
+          </div>
+        </div>
+
+        <!-- Ingredients breakdown -->
+        <div class="ingredients-section card-subpanel">
+          <h4 class="subpanel-title"><i data-lucide="list"></i> Таркиби (порция):</h4>
+          <ul class="ingredients-list" id="ai-ingredients-list">
+            <!-- Dynamically populated via JS -->
+          </ul>
+        </div>
+
+        <!-- AI Dietitian Healthy Tip -->
+        <div class="ai-tip-section bg-primary-glass">
+          <div class="tip-header">
+            <i data-lucide="bot" class="tip-icon text-gradient"></i>
+            <h4>АИ Диетолог маслаҳати:</h4>
+          </div>
+          <p id="ai-healthy-tip" class="tip-content">Овқат таркиби соғлом озиш мақсадингизга мос.</p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-edit-ai-result">Таҳрирлаш <i data-lucide="edit-3"></i></button>
+          <button type="button" class="btn btn-accent flex-1" id="btn-save-ai-result">Қўшиш <i data-lucide="check-check"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom script file -->
+  <script src="app.js"></script>
+</body>
+</html>
