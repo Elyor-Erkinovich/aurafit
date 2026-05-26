@@ -1316,15 +1316,50 @@ async function searchBarcodeInOpenFoodFacts(barcode) {
 
 // --- INTERACTIVE DIETICIAN AI CHAT (Gemini API with Profile Context) ---
 
+function renderQuickPrompts() {
+  const container = document.getElementById('chat-suggested-prompts-row');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  const prompts = STATE.selectedCoach === 'trainer' ? [
+    { text: "🏋️‍♂️ 3 кунлик машқ режаси", query: "Озиш ва жисмоний чидамлилик учун уй шароитида бажариладиган 3 кунлик тренировка режасини батафсил тузиб бер." },
+    { text: "🔥 Уйда вазн ташлаш", query: "Уй шароитида ҳеч қандай анжомларсиз ёғ эритиш учун энг самарали кардио машқлар режасини расмлар билан кўрсат." },
+    { text: "💪 Мушак ўстириш", query: "Куч тўплаш ва мушак массасини ошириш учун асосий куч машқлари режасини ва оқсилга бой овқатланиш маслаҳатларини бер." }
+  ] : [
+    { text: "🥗 Кунлик соғлом меню", query: "Бугунги қолган калория ва БЖУ балансимни инобатга олган ҳолда, мен учун соғлом ва мазали кунлик таомнома тавсия қил." },
+    { text: "🍎 Тезироқ озиш диетаси", query: "Соғлом ва хавфсиз озиш учун қандай парҳез тутишим керак ва кундалик овқатланишда нималарга эътибор беришим лозим?" },
+    { text: "🥑 БЖУ баланси нима?", query: "Оқсил, ёғ ва углеводлар (БЖУ) баланси соғлиқ учун нега муҳим ва уларни қандай тўғри тақсимлаш керак?" }
+  ];
+
+  prompts.forEach(p => {
+    const chip = document.createElement('button');
+    chip.className = 'prompt-chip';
+    chip.textContent = p.text;
+    chip.type = 'button';
+    chip.addEventListener('click', () => {
+      DOM.chatInputText.value = p.query;
+      DOM.btnSendChatMsg.disabled = false;
+      sendChatMessage();
+    });
+    container.appendChild(chip);
+  });
+}
+
 function setupChatScreen() {
   DOM.chatMessagesContainer.innerHTML = '';
   
   if (STATE.chatHistory.length === 0) {
     const welcomeBubble = document.createElement('div');
     welcomeBubble.className = 'chat-msg ai-msg';
+    const coachName = STATE.selectedCoach === 'trainer' ? 'AuraFit АИ Мураббий' : 'AuraFit АИ Диетолог';
+    const welcomeText = STATE.selectedCoach === 'trainer' 
+      ? 'Ассалому алайкум! Мен сизнинг AuraFit шахсий спорт мураббийингизман. Машқлар режаси, тренировкалар, уй шароитида вазн ташлаш ёки мушак чиқариш бўйича исталган саволингизни беришингиз мумкин.'
+      : 'Ассалому алайкум! Мен сизнинг AuraFit шахсий АИ диетологингизман. Соғлом овқатланиш, озиш, машқлар ёки кунлик таомлар рецепти ҳақида исталган саволингизни беришингиз мумкин.';
+    
     welcomeBubble.innerHTML = `
       <div class="msg-bubble">
-        Ассалому алайкум! Мен сизнинг AuraFit шахсий АИ диетологингизман. Соғлом овқатланиш, озиш, машқлар ёки кунлик таомлар рецепти ҳақида исталган саволингизни беришингиз мумкин.
+        <b>${coachName}:</b><br>${welcomeText}
       </div>
       <span class="msg-time">Ҳозир</span>
     `;
@@ -1341,6 +1376,9 @@ function setupChatScreen() {
     });
     scrollToBottomChat();
   }
+
+  // Populate dynamic quick prompts chips
+  renderQuickPrompts();
 }
 
 function scrollToBottomChat() {
@@ -1457,11 +1495,6 @@ async function sendChatMessage() {
     }
 
     const chatPromptContents = [];
-    chatPromptContents.push({
-      role: 'user',
-      parts: [{ text: `[SYSTEM CONTEXT: ${chatSystemContext}]` }]
-    });
-
     const recentHistory = STATE.chatHistory.slice(-6);
     recentHistory.forEach(msg => {
       chatPromptContents.push({
@@ -1475,7 +1508,12 @@ async function sendChatMessage() {
     const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: chatPromptContents })
+      body: JSON.stringify({
+        contents: chatPromptContents,
+        systemInstruction: {
+          parts: [{ text: chatSystemContext }]
+        }
+      })
     });
 
     if (!response.ok) throw new Error("АИ алоқа хатолиги");
@@ -1603,7 +1641,7 @@ async function generateChefRecipe(isFridgeMode = false) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json" }
       })
     });
@@ -1738,6 +1776,7 @@ async function analyzeFoodImage() {
     const requestBody = {
       contents: [
         {
+          role: "user",
           parts: [
             { text: systemPrompt },
             {
@@ -2250,6 +2289,7 @@ function setupEventListeners() {
           avatarIconEl.style.borderColor = 'rgba(168, 85, 247, 0.4)';
           avatarIconEl.style.color = 'var(--accent-purple)';
         }
+        DOM.chatInputText.placeholder = "Мураббийга савол беринг...";
       } else {
         if (titleEl) titleEl.textContent = 'AuraFit АИ Диетолог';
         if (subtitleEl) subtitleEl.textContent = 'Нутрициолог ва овқатланиш бўйича маслаҳатчи';
@@ -2258,8 +2298,10 @@ function setupEventListeners() {
           avatarIconEl.style.borderColor = 'rgba(56, 189, 248, 0.4)';
           avatarIconEl.style.color = 'var(--primary)';
         }
+        DOM.chatInputText.placeholder = "Диетологга савол беринг...";
       }
       lucide.createIcons();
+      renderQuickPrompts();
     });
   }
   DOM.btnResetChatHistory.addEventListener('click', () => {

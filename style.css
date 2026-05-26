@@ -2651,3 +2651,40 @@ a:hover {
   100% { box-shadow: 0 0 0px rgba(168, 85, 247, 0); }
 }
 
+/* --- Chat Quick Prompts & Suggestion Chips --- */
+.chat-quick-prompts {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: rgba(6, 10, 19, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chat-quick-prompts::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for clean chip row */
+}
+
+.prompt-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-sub);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  font-family: var(--font-body);
+}
+
+.prompt-chip:hover {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.2);
+  color: var(--text-main);
+  transform: translateY(-1px);
+}
+
+
