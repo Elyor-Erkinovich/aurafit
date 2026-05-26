@@ -20,7 +20,8 @@ const STATE = {
   waterTimerSecondsLeft: 7200, // 2 hours default countdown timer
   waterAlarmIntervalId: null,
   activeChefMealType: 'Breakfast',
-  selectedCoach: 'dietitian'  // Active AI Coach (dietitian or trainer)
+  selectedCoach: 'dietitian',  // Active AI Coach (dietitian or trainer)
+  chatIsThinking: false        // AI Thinking lock state
 };
 
 // SVG Progress Ring Constants
@@ -1337,7 +1338,11 @@ function renderQuickPrompts() {
     chip.className = 'prompt-chip';
     chip.textContent = p.text;
     chip.type = 'button';
+    if (STATE.chatIsThinking) {
+      chip.disabled = true;
+    }
     chip.addEventListener('click', () => {
+      if (STATE.chatIsThinking) return;
       DOM.chatInputText.value = p.query;
       DOM.btnSendChatMsg.disabled = false;
       sendChatMessage();
@@ -1387,13 +1392,17 @@ function scrollToBottomChat() {
 
 async function sendChatMessage() {
   const userText = DOM.chatInputText.value.trim();
-  if (!userText) return;
+  if (!userText || STATE.chatIsThinking) return;
 
   const apiKey = STATE.profile.geminiApiKey;
   if (!apiKey) {
     alert("API калити созланмаган! Илтимос, созламалардан калитни киритинг.");
     return;
   }
+
+  // Prevent multiple overlapping chat calls
+  STATE.chatIsThinking = true;
+  document.querySelectorAll('.prompt-chip').forEach(chip => chip.disabled = true);
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1494,16 +1503,25 @@ async function sendChatMessage() {
       `;
     }
 
+    // Strictly alternate roles walking backwards to construct bulletproof history
     const chatPromptContents = [];
-    const recentHistory = STATE.chatHistory.slice(-6);
-    recentHistory.forEach(msg => {
-      chatPromptContents.push({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      });
-    });
+    let expectedRole = 'user';
+    for (let i = STATE.chatHistory.length - 1; i >= 0; i--) {
+      const msg = STATE.chatHistory[i];
+      const apiRole = msg.role === 'user' ? 'user' : 'model';
+      if (apiRole === expectedRole) {
+        chatPromptContents.unshift({
+          role: apiRole,
+          parts: [{ text: msg.text }]
+        });
+        expectedRole = expectedRole === 'user' ? 'model' : 'user';
+      }
+      if (chatPromptContents.length >= 6) {
+        break;
+      }
+    }
 
-    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -1516,7 +1534,14 @@ async function sendChatMessage() {
       })
     });
 
-    if (!response.ok) throw new Error("АИ алоқа хатолиги");
+    if (!response.ok) {
+      let errText = "АИ алоқа хатолиги юз берди";
+      try {
+        const errorData = await response.json();
+        errText = errorData.error?.message || errText;
+      } catch (_) {}
+      throw new Error(errText);
+    }
 
     const data = await response.json();
     const aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Саволингизни тушуна олмадим.";
@@ -1537,10 +1562,28 @@ async function sendChatMessage() {
     saveStateToLocalStorage();
 
   } catch (error) {
-    console.error("Chat API error", error);
+    console.error("Chat API error:", error);
+    
+    // Clean up history and UI
+    STATE.chatHistory.pop();
+    saveStateToLocalStorage();
+
     const indicator = document.getElementById('ai-typing-indicator');
     if (indicator) indicator.remove();
+
+    const bubbles = DOM.chatMessagesContainer.querySelectorAll('.chat-msg.user-msg');
+    if (bubbles.length > 0) {
+      bubbles[bubbles.length - 1].remove();
+    }
+
+    // Restore text for convenience
+    DOM.chatInputText.value = userText;
+    DOM.btnSendChatMsg.disabled = false;
+
     alert(`Хатолик юз берди: ${error.message}`);
+  } finally {
+    STATE.chatIsThinking = false;
+    document.querySelectorAll('.prompt-chip').forEach(chip => chip.disabled = false);
   }
 }
 
@@ -1635,7 +1678,7 @@ async function generateChefRecipe(isFridgeMode = false) {
       }
     `;
 
-    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -1646,7 +1689,14 @@ async function generateChefRecipe(isFridgeMode = false) {
       })
     });
 
-    if (!response.ok) throw new Error("АИ алоқа хатолиги юз берди");
+    if (!response.ok) {
+      let errText = "АИ алоқа хатолиги юз берди";
+      try {
+        const errorData = await response.json();
+        errText = errorData.error?.message || errText;
+      } catch (_) {}
+      throw new Error(errText);
+    }
 
     const data = await response.json();
     const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -1771,7 +1821,7 @@ async function analyzeFoodImage() {
       Нишон сифатида фақат ушбу JSON нинг ўзинигина қайтар, markdown ёки қўшимча сўзлар қўшма.
     `;
 
-    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const requestBody = {
       contents: [
