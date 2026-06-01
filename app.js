@@ -703,6 +703,15 @@ function renderWeightTrendChart() {
     return;
   }
   
+  const boxEl = document.getElementById('weight-chart-box');
+  if (!boxEl || boxEl.classList.contains('hidden')) {
+    if (weightChartInstance) {
+      weightChartInstance.destroy();
+      weightChartInstance = null;
+    }
+    return;
+  }
+
   const canvasEl = document.getElementById('weight-trend-canvas');
   if (!canvasEl) return;
   const ctx = canvasEl.getContext('2d');
@@ -761,6 +770,15 @@ function renderWeightTrendChart() {
 function renderCalorieHistoryChart() {
   if (typeof Chart === 'undefined') {
     console.warn("Chart.js is not loaded yet.");
+    return;
+  }
+
+  const boxEl = document.getElementById('cal-chart-box');
+  if (!boxEl || boxEl.classList.contains('hidden')) {
+    if (calorieChartInstance) {
+      calorieChartInstance.destroy();
+      calorieChartInstance = null;
+    }
     return;
   }
 
@@ -1978,18 +1996,70 @@ function handleImageSelection(file) {
     return;
   }
 
+  // Show inline compression feedback inside the dropzone
+  const originalPromptHtml = DOM.dropzonePrompt.innerHTML;
+  DOM.dropzonePrompt.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--primary);padding:20px;">
+      <i data-lucide="loader" class="animate-spin" style="width:28px;height:28px"></i>
+      <span style="font-size:0.9rem;font-weight:600;">Расм сиқиляпти (Оптималлаштириш)...</span>
+    </div>
+  `;
+  try {
+    lucide.createIcons();
+  } catch (e) {}
+
   const reader = new FileReader();
   reader.onload = function(e) {
-    const rawBase64 = e.target.result;
-    
-    const splitData = rawBase64.split(',');
-    STATE.selectedImageMime = file.type;
-    STATE.selectedImageBase64 = splitData[1];
+    const img = new Image();
+    img.onload = function() {
+      // 1024px limit guarantees quick uploads, zero mobile lags, and 100% stable API payloads
+      const maxDim = 1024;
+      let width = img.width;
+      let height = img.height;
 
-    DOM.capturedImageView.src = rawBase64;
-    DOM.imagePreviewBox.classList.remove('hidden');
-    DOM.dropzonePrompt.classList.add('hidden');
-    DOM.btnStartAnalysis.disabled = false;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      // Draw onto downscaled canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Export as compressed 0.75-quality JPEG
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+      const splitData = compressedDataUrl.split(',');
+      
+      STATE.selectedImageMime = 'image/jpeg';
+      STATE.selectedImageBase64 = splitData[1];
+
+      DOM.capturedImageView.src = compressedDataUrl;
+      DOM.imagePreviewBox.classList.remove('hidden');
+      DOM.dropzonePrompt.classList.add('hidden');
+      DOM.btnStartAnalysis.disabled = false;
+      
+      // Restore dropzone layout
+      DOM.dropzonePrompt.innerHTML = originalPromptHtml;
+      try {
+        lucide.createIcons();
+      } catch (e) {}
+    };
+    img.onerror = function() {
+      alert("Расмни ўқишда хатолик юз берди.");
+      DOM.dropzonePrompt.innerHTML = originalPromptHtml;
+      try {
+        lucide.createIcons();
+      } catch (e) {}
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }

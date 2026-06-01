@@ -8,7 +8,7 @@ const ASSETS_TO_CACHE = [
   './app.js',
   './manifest.json',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap',
-  'https://unpkg.com/lucide@latest'
+  'https://unpkg.com/lucide@0.379.0/dist/umd/lucide.min.js'
 ];
 
 // Install Service Worker and cache resources
