@@ -615,65 +615,215 @@
         </div>
       </section>
 
-      <!-- SCREEN 4: WORKOUTS (Exercise & MET) -->
+      <!-- SCREEN 4: WORKOUTS (Exercise & MET & Anatomy) -->
       <section id="screen-workout" class="app-screen">
         <div class="workout-screen-container">
-          <!-- Burned Calories Card -->
-          <div class="card workout-burned-card">
-            <div class="workout-ring-display">
-              <i data-lucide="dumbbell" class="workout-ring-icon animated-float"></i>
-              <div class="workout-cal-text">
-                <span class="workout-cal-num" id="workout-total-burned-val">0</span>
-                <span class="workout-cal-lbl">Ккал Сарфланди</span>
+          
+          <!-- Workout Screen Sub-Tabs -->
+          <div class="workout-screen-tabs">
+            <button class="workout-tab-btn active" id="workout-tab-btn-log" data-target="workout-log-panel">
+              <i data-lucide="dumbbell"></i> Кундалик
+            </button>
+            <button class="workout-tab-btn" id="workout-tab-btn-guide" data-target="workout-guide-panel">
+              <i data-lucide="book-open"></i> Машқ Қўлланмаси
+            </button>
+            <button class="workout-tab-btn" id="workout-tab-btn-anatomy" data-target="workout-anatomy-panel">
+              <i data-lucide="activity"></i> Анатомия ва Биомеханика
+            </button>
+          </div>
+
+          <!-- PANEL 4A: WORKOUT DIARY LOGS -->
+          <div class="workout-panel active" id="workout-log-panel">
+            <!-- Burned Calories Card -->
+            <div class="card workout-burned-card">
+              <div class="workout-ring-display">
+                <i data-lucide="dumbbell" class="workout-ring-icon animated-float"></i>
+                <div class="workout-cal-text">
+                  <span class="workout-cal-num" id="workout-total-burned-val">0</span>
+                  <span class="workout-cal-lbl">Ккал Сарфланди</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Exercise Logger -->
+            <div class="card add-workout-card">
+              <h3 class="card-title"><i data-lucide="plus-circle"></i> Машқ Қўшиш</h3>
+              <form id="form-log-workout">
+                <div class="form-group">
+                  <label for="workout-select-type">Машқ Тури (Илмий MET)</label>
+                  <select id="workout-select-type" class="form-select">
+                    <option value="8.0" selected>Югуриш (Running, ~8.0 MET)</option>
+                    <option value="6.0">Сузиш (Swimming, ~6.0 MET)</option>
+                    <option value="5.0">Куч машқлари (Strength Training, ~5.0 MET)</option>
+                    <option value="5.5">Велосипед ҳайдаш (Cycling, ~5.5 MET)</option>
+                    <option value="3.8">Тез юриш (Fast Walking, ~3.8 MET)</option>
+                    <option value="2.5">Йога ва чўзилиш (Yoga/Stretching, ~2.5 MET)</option>
+                    <option value="4.5">Рақс тушиш (Dancing, ~4.5 MET)</option>
+                  </select>
+                </div>
+                
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="workout-input-duration">Давомийлиги (минут)</label>
+                    <input type="number" id="workout-input-duration" class="form-input" placeholder="30" required min="1" max="300">
+                  </div>
+                  <div class="form-group">
+                    <label>Баҳоланган Сарф</label>
+                    <div class="exercise-preview-cal" id="workout-burn-preview">~0 ккал</div>
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-accent btn-block">Машқни Қўшиш <i data-lucide="plus"></i></button>
+              </form>
+            </div>
+
+            <!-- Today's Exercise List -->
+            <div class="workout-list-card card">
+              <h3 class="card-title"><i data-lucide="list"></i> Бугунги Машқлар</h3>
+              <div class="empty-state" id="workout-empty-state">
+                <i data-lucide="dumbbell" class="empty-icon"></i>
+                <h4>Ҳали машқ бажармадингизми?</h4>
+                <p>Жисмоний машқларни қўшинг ва кунлик овқатланиш бюджетингизни кенгайтиринг.</p>
+              </div>
+              
+              <div class="workout-items-list hidden" id="workout-items-container">
+                <!-- Dynamically populated via JS -->
               </div>
             </div>
           </div>
 
-          <!-- Add Exercise Logger -->
-          <div class="card add-workout-card">
-            <h3 class="card-title"><i data-lucide="plus-circle"></i> Машқ Қўшиш</h3>
-            <form id="form-log-workout">
-              <div class="form-group">
-                <label for="workout-select-type">Машқ Тури (Илмий MET)</label>
-                <select id="workout-select-type" class="form-select">
-                  <option value="8.0" selected>Югуриш (Running, ~8.0 MET)</option>
-                  <option value="6.0">Сузиш (Swimming, ~6.0 MET)</option>
-                  <option value="5.0">Куч машқлари (Strength Training, ~5.0 MET)</option>
-                  <option value="5.5">Велосипед ҳайдаш (Cycling, ~5.5 MET)</option>
-                  <option value="3.8">Тез юриш (Fast Walking, ~3.8 MET)</option>
-                  <option value="2.5">Йога ва чўзилиш (Yoga/Stretching, ~2.5 MET)</option>
-                  <option value="4.5">Рақс тушиш (Dancing, ~4.5 MET)</option>
-                </select>
-              </div>
-              
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label for="workout-input-duration">Давомийлиги (минут)</label>
-                  <input type="number" id="workout-input-duration" class="form-input" placeholder="30" required min="1" max="300">
-                </div>
-                <div class="form-group">
-                  <label>Баҳоланган Сарф</label>
-                  <div class="exercise-preview-cal" id="workout-burn-preview">~0 ккал</div>
-                </div>
-              </div>
-              
-              <button type="submit" class="btn btn-accent btn-block">Машқни Қўшиш <i data-lucide="plus"></i></button>
-            </form>
+          <!-- PANEL 4B: OFFLINE WORKOUT GUIDE -->
+          <div class="workout-panel hidden" id="workout-guide-panel">
+            <div class="card guide-intro-card">
+              <h3 class="card-title"><i data-lucide="book-open"></i> Машқлар Фитнес Энциклопедияси</h3>
+              <p class="card-subtitle">Мушаклар гуруҳларига мослаштирилган оффлайн машқлар ва тўғри бажариш қўлланмаси.</p>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div class="category-chips-row">
+              <button class="category-chip active" data-category="all">Барчаси</button>
+              <button class="category-chip" data-category="chest">Ko'krak</button>
+              <button class="category-chip" data-category="back">Orqa</button>
+              <button class="category-chip" data-category="legs">Oyoq</button>
+              <button class="category-chip" data-category="arms">Qo'l & Yelka</button>
+              <button class="category-chip" data-category="core">Qorin</button>
+            </div>
+
+            <!-- Exercises Grid -->
+            <div class="exercise-guide-grid" id="exercise-guide-container">
+              <!-- Dynamically rendered via JS -->
+            </div>
           </div>
 
-          <!-- Today's Exercise List -->
-          <div class="workout-list-card card">
-            <h3 class="card-title"><i data-lucide="list"></i> Бугунги Машқлар</h3>
-            <div class="empty-state" id="workout-empty-state">
-              <i data-lucide="dumbbell" class="empty-icon"></i>
-              <h4>Ҳали машқ бажармадингизми?</h4>
-              <p>Жисмоний машқларни қўшинг ва кунлик овқатланиш бюджетингизни кенгайтиринг.</p>
+          <!-- PANEL 4C: ANATOMY & BIOMECHANICS LAB -->
+          <div class="workout-panel hidden" id="workout-anatomy-panel">
+            <div class="card anatomy-intro-card">
+              <h3 class="card-title"><i data-lucide="activity"></i> Мушакларнинг Анатомик Харитаси</h3>
+              <p class="card-subtitle">Танадаги бирор мушак гуруҳи устига босинг ва унга тегишли биомеханик ҳаракат қоидалари ҳамда машқларни кўринг.</p>
+              
+              <!-- Human Anatomy View Switcher -->
+              <div class="anatomy-view-toggles">
+                <button class="btn btn-secondary btn-sm active" id="btn-anatomy-front">Олд томон</button>
+                <button class="btn btn-secondary btn-sm" id="btn-anatomy-back">Орқа томон</button>
+              </div>
             </div>
-            
-            <div class="workout-items-list hidden" id="workout-items-container">
-              <!-- Dynamically populated via JS -->
+
+            <!-- SVG Human Body Maps -->
+            <div class="anatomy-maps-container">
+              <!-- FRONT VIEW -->
+              <svg viewBox="0 0 200 400" class="anatomy-svg" id="anatomy-svg-front">
+                <!-- Body Backdrop Outline -->
+                <path d="M100,20 C112,20 122,30 122,42 C122,54 112,64 100,64 C88,64 78,54 78,42 C78,30 88,20 100,20 Z M94,64 L106,64 L106,80 L94,80 Z M65,80 L135,80 C145,80 152,87 152,95 L145,210 C145,212 142,215 140,215 L60,215 C58,215 55,212 55,210 L48,95 C48,87 55,80 65,80 Z M68,215 L95,215 L90,320 L75,320 Z M105,215 L132,215 L125,320 L110,320 Z M75,320 L88,320 L85,380 L78,380 Z M112,320 L125,320 L122,380 L115,380 Z" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                
+                <!-- Clickable Muscles -->
+                <!-- Shoulders (Yelka) -->
+                <g class="muscle-group" data-muscle="shoulders">
+                  <path d="M48,88 C43,92 43,101 48,105 C53,109 61,109 65,105 C69,101 69,92 65,88 Z" class="muscle-path"/>
+                  <path d="M152,88 C147,92 147,101 152,105 C157,109 165,109 169,105 C173,101 173,92 169,88 Z" class="muscle-path"/>
+                  <text x="32" y="78" class="muscle-label-txt">Yelka</text>
+                </g>
+                
+                <!-- Chest (Ko'krak) -->
+                <g class="muscle-group" data-muscle="chest">
+                  <path d="M72,88 L98,88 L98,125 L70,125 Z" class="muscle-path"/>
+                  <path d="M102,88 L128,88 L130,125 L102,125 Z" class="muscle-path"/>
+                  <text x="100" y="110" class="muscle-label-txt center">Ko'krak</text>
+                </g>
+                
+                <!-- Biceps (Qo'l Oldi) -->
+                <g class="muscle-group" data-muscle="biceps">
+                  <path d="M42,108 C40,116 41,128 44,138 L52,138 C54,128 54,116 52,108 Z" class="muscle-path"/>
+                  <path d="M158,108 C160,116 159,128 156,138 L148,138 C146,128 146,116 148,108 Z" class="muscle-path"/>
+                  <text x="24" y="125" class="muscle-label-txt">Biceps</text>
+                </g>
+                
+                <!-- Abdominals (Qorin) -->
+                <g class="muscle-group" data-muscle="abs">
+                  <path d="M80,135 L120,135 L118,205 L82,205 Z" class="muscle-path"/>
+                  <text x="100" y="170" class="muscle-label-txt center">Qorin</text>
+                </g>
+                
+                <!-- Quadriceps (Oyoq Oldi) -->
+                <g class="muscle-group" data-muscle="quads">
+                  <path d="M68,220 L94,220 L90,305 L72,305 Z" class="muscle-path"/>
+                  <path d="M106,220 L132,220 L128,305 L110,305 Z" class="muscle-path"/>
+                  <text x="100" y="270" class="muscle-label-txt center">Oyoq Oldi</text>
+                </g>
+              </svg>
+
+              <!-- BACK VIEW -->
+              <svg viewBox="0 0 200 400" class="anatomy-svg hidden" id="anatomy-svg-back">
+                <!-- Body Backdrop Outline -->
+                <path d="M100,20 C112,20 122,30 122,42 C122,54 112,64 100,64 C88,64 78,54 78,42 C78,30 88,20 100,20 Z M94,64 L106,64 L106,80 L94,80 Z M65,80 L135,80 C145,80 152,87 152,95 L145,210 C145,212 142,215 140,215 L60,215 C58,215 55,212 55,210 L48,95 C48,87 55,80 65,80 Z M68,215 L95,215 L90,320 L75,320 Z M105,215 L132,215 L125,320 L110,320 Z M75,320 L88,320 L85,380 L78,380 Z M112,320 L125,320 L122,380 L115,380 Z" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                
+                <!-- Clickable Muscles -->
+                <!-- Trapezius (Trapetsiya) -->
+                <g class="muscle-group" data-muscle="traps">
+                  <path d="M85,82 L115,82 L120,98 L80,98 Z" class="muscle-path"/>
+                  <text x="100" y="92" class="muscle-label-txt center">Trapetsiya</text>
+                </g>
+                
+                <!-- Latissimus Dorsi (Orqa) -->
+                <g class="muscle-group" data-muscle="lats">
+                  <path d="M72,100 L97,100 L97,195 L65,180 Z" class="muscle-path"/>
+                  <path d="M103,100 L128,100 L135,180 L103,195 Z" class="muscle-path"/>
+                  <text x="100" y="145" class="muscle-label-txt center">Orqa</text>
+                </g>
+                
+                <!-- Triceps (Qo'l Orqa) -->
+                <g class="muscle-group" data-muscle="triceps">
+                  <path d="M42,108 C40,116 41,128 44,138 L52,138 C54,128 54,116 52,108 Z" class="muscle-path"/>
+                  <path d="M158,108 C160,116 159,128 156,138 L148,138 C146,128 146,116 148,108 Z" class="muscle-path"/>
+                  <text x="24" y="125" class="muscle-label-txt">Triceps</text>
+                </g>
+                
+                <!-- Gluteus (Dumba) -->
+                <g class="muscle-group" data-muscle="glutes">
+                  <path d="M60,210 L140,210 L136,245 L64,245 Z" class="muscle-path"/>
+                  <text x="100" y="230" class="muscle-label-txt center">Dumba</text>
+                </g>
+                
+                <!-- Hamstrings / Boldir (Boldir/Oyoq Orqa) -->
+                <g class="muscle-group" data-muscle="hamstrings">
+                  <path d="M68,248 L94,248 L90,320 L75,320 Z" class="muscle-path"/>
+                  <path d="M106,248 L132,248 L125,320 L110,320 Z" class="muscle-path"/>
+                  <!-- Boldir -->
+                  <path d="M75,325 L88,325 L86,375 L77,375 Z" class="muscle-path"/>
+                  <path d="M112,325 L125,325 L123,375 L114,375 Z" class="muscle-path"/>
+                  <text x="100" y="290" class="muscle-label-txt center">Oyoq Orqa</text>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Dynamic Result Card -->
+            <div class="card anatomy-result-card" id="anatomy-result-box">
+              <div class="result-placeholder">
+                <i data-lucide="info" class="placeholder-icon"></i>
+                <p>Тана схемасидаги бирор мушакни босинг...</p>
+              </div>
             </div>
           </div>
+
         </div>
       </section>
 

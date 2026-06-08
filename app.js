@@ -21,7 +21,11 @@ const STATE = {
   waterAlarmIntervalId: null,
   activeChefMealType: 'Breakfast',
   selectedCoach: 'dietitian',  // Active AI Coach (dietitian or trainer)
-  chatIsThinking: false        // AI Thinking lock state
+  chatIsThinking: false,        // AI Thinking lock state
+  activeWorkoutTab: 'workout-log-panel',
+  selectedWorkoutCategory: 'all',
+  selectedAnatomyMuscle: null,
+  workoutSubTabsInitialized: false
 };
 
 // SVG Progress Ring Constants
@@ -37,6 +41,223 @@ const MET_FACTORS = {
   '3.8': 'Tez yurish (Fast Walking)',
   '2.5': 'Yoga va cho\'zilish (Yoga/Stretching)',
   '4.5': 'Raqs tushish (Dancing)'
+};
+
+// --- OFFLINE WORKOUTS & ANATOMY DATABASES ---
+const EXERCISES_DATABASE = [
+  {
+    id: 'pushups',
+    category: 'chest',
+    name: "Otjimaniya (Push-Ups)",
+    desc: "Tana og'irligi yordamida ko'krak, yelka oldi va triceps mushaklarini rivojlantiruvchi asosiy mashq.",
+    unsplashId: "photo-1571019614242-c5c5dee9f50b",
+    sets: "3-4 set x 12-15 marta",
+    steps: "1. Qo'llarni yelka kengligida polga qo'ying. 2. Tanani to'g'ri chiziq bo'ylab ushlab, ko'krak erga teyguncha pastga tushing. 3. Nafas chiqarib, boshlang'ich holatga qayting.",
+    biomechanicsTip: "Tirsaklarni yon tomonga juda yoyib yubormang (45 gradus burchak ostida saqlang), bu yelka bo'g'imlarini jarohatlanishdan asraydi."
+  },
+  {
+    id: 'benchpress',
+    category: 'chest',
+    name: "Shtangani yotgan holda ko'tarish (Bench Press)",
+    desc: "Ko'krak mushaklarini massasi va kuchini oshirish uchun eng asosiy baza mashqi.",
+    unsplashId: "photo-1534438327276-14e5300c3a48",
+    sets: "4 set x 8-10 marta",
+    steps: "1. Skameykaga yoting, shtangani yelkadan kengroq ushlang. 2. Shtangani ko'krak o'rtasiga sekin tushiring. 3. Kuchli harakat bilan shtangani yuqoriga ko'taring.",
+    biomechanicsTip: "Oyoqlaringiz erga mahkam tayanib tursin. Harakat davomida ko'krak qafasini biroz yuqoriga ko'taring (ko'prik qiling) va kuraklarni birlashtiring."
+  },
+  {
+    id: 'chest_dips',
+    category: 'chest',
+    name: "Brusda tortilish (Chest Dips)",
+    desc: "Ko'krakning pastki qismi va tricepsni ajoyib shakllantiruvchi mashq.",
+    unsplashId: "photo-1581009146145-b5ef050c2e1e",
+    sets: "3 set x 10-12 marta",
+    steps: "1. Brusga chiqing. 2. Tanani biroz oldinga egib, tirsaklarni 90 darajagacha buking va pastga tushing. 3. Qo'llarni to'g'rilab yuqoriga ko'taring.",
+    biomechanicsTip: "Tirsaklar chetga qarab ketmasin va tanani o'ta ko'p silkintirmang."
+  },
+  {
+    id: 'pullups',
+    category: 'back',
+    name: "Turnikda tortilish (Pull-Ups)",
+    desc: "Keng orqa mushaklari (qanotlar) va bicepsni rivojlantiruvchi eng samarali mashq.",
+    unsplashId: "photo-1526506118085-60ce8714f8c5",
+    sets: "4 set x 8-12 marta",
+    steps: "1. Turnikdan yelkadan kengroq ushlab osiling. 2. Kuraklarni birlashtirib, iyak turnik to'sinidan o'tguncha tanangizni yuqoriga torting. 3. Sekin va nazorat ostida pastga tushing.",
+    biomechanicsTip: "Faqat qo'l bilan emas, orqa mushaklari bilan tortilishga e'tibor bering. Yelkalarni yuqorida qisib qolishiga yo'l qo'ymang."
+  },
+  {
+    id: 'dumbbell_row',
+    category: 'back',
+    name: "Gantelni egilgan holda tortish (Dumbbell Row)",
+    desc: "Har bir orqa tomonni alohida ishlash va mushaklar simmetriyasini yaxshilash uchun ajoyib mashq.",
+    unsplashId: "photo-1605296867304-46d5465a25f1",
+    sets: "3 set x 10-12 marta",
+    steps: "1. Bir tizza va qo'l bilan skameykaga tayaning, ikkinchi qo'lda gantel bo'lsin. 2. Gantelni bel tomonga torting (tirsakni yuqoriga ko'taring). 3. Gantelni sekin pastga tushiring.",
+    biomechanicsTip: "Harakatning eng yuqori nuqtasida orqa mushagini 1 soniya davomida siqib turing."
+  },
+  {
+    id: 'squats',
+    category: 'legs',
+    name: "Shtanga bilan o'tirib-turish (Barbell Squats)",
+    desc: "Kvadritseps, dumba va boldir mushaklarini rivojlantiruvchi barcha mashqlar qiroli.",
+    unsplashId: "photo-1574680096145-d05b474e2155",
+    sets: "4 set x 10-12 marta",
+    steps: "1. Shtangani yelka ortiga qo'yib, oyoqlarni yelka kengligida turing. 2. Dumbingizni orqaga chiqarib, tizzalar 90 daraja burchak hosil qilguncha o'tiring. 3. Oyoqlar bilan erdan itarilib, tik turing.",
+    biomechanicsTip: "O'tirganda tizzalaringiz oyoq uchi chizig'idan o'tib ketmasligiga e'tibor bering. Orqangizni doimo tekis ushlang."
+  },
+  {
+    id: 'lunges',
+    category: 'legs',
+    name: "Oyoq oldinga tashlash (Lunges)",
+    desc: "Son mushaklari va dumbani alohida ishlash hamda muvozanatni yaxshilash mashqi.",
+    unsplashId: "photo-1507398941214-572c25f4b1dc",
+    sets: "3 set x 12 marta (har bir oyoqqa)",
+    steps: "1. Tik turing, bir oyoq bilan oldinga katta qadam tashlang. 2. Orqa tizza erga tegguncha pastga tushing. 3. Oldingi oyoq yordamida boshlang'ich holatga qayting.",
+    biomechanicsTip: "Tana doimo tik tursin, oldinga egilib ketmang."
+  },
+  {
+    id: 'bicep_curls',
+    category: 'arms',
+    name: "Biceps uchun gantel ko'tarish (Bicep Curls)",
+    desc: "Qo'lning oldingi qismini (biceps) izolyatsiya qilingan holda rivojlantirish mashqi.",
+    unsplashId: "photo-1581009146145-b5ef050c2e1e",
+    sets: "3-4 set x 12-15 marta",
+    steps: "1. Gantellarni yoningizda ushlab turing. 2. Tirsaklarni qo'zg'atmasdan, gantellarni yelkaga qarab ko'taring. 3. Sekin boshlang'ich holatga tushiring.",
+    biomechanicsTip: "Harakat davomida tirsaklaringizni oldinga yoki orqaga qimirlatmang, ularni tanangizga mahkamlang."
+  },
+  {
+    id: 'tricep_pushdowns',
+    category: 'arms',
+    name: "Triceps blokida qo'llarni to'g'rilash (Tricep Pushdowns)",
+    desc: "Qo'l orqasi (triceps) mushaklarini shakllantiruvchi eng ommabop mashq.",
+    unsplashId: "photo-1541534741688-6078c6bfb5c5",
+    sets: "3 set x 12-15 marta",
+    steps: "1. Blok arqonini ushlang, tirsaklar tanaga yopishgan bo'lsin. 2. Arqonni tirsaklarni to'liq ochib, pastga bosing. 3. Arqonni ko'krak darajasigacha sekin qaytaring.",
+    biomechanicsTip: "Harakat faqat tirsak bo'g'imida bo'lishi kerak. Yelkalaringizni qimirlatmang."
+  },
+  {
+    id: 'dumbbell_press',
+    category: 'arms',
+    name: "Yelka uchun gantel ko'tarish (Shoulder Press)",
+    desc: "Yelka (deltoid) mushaklarini kengaytirish va kuchaytirish uchun ajoyib mashq.",
+    unsplashId: "photo-1574680100466-9a2c3a7a92fb",
+    sets: "3 set x 10-12 marta",
+    steps: "1. Skameykaga o'tiring, gantellarni quloq ro'parasida ushlang. 2. Gantellarni tepaga, bir-biriga yaqinlashtirib ko'taring. 3. Sekin quloq ro'parasiga qaytaring.",
+    biomechanicsTip: "Orqangiz skameykaga mahkam tegib tursin, belingizni haddan tashqari bukib yubormang."
+  },
+  {
+    id: 'crunches',
+    category: 'core',
+    name: "Press ko'tarish (Crunches)",
+    desc: "Qorin mushaklari (abdominal press) yuqori qismini mustahkamlash mashqi.",
+    unsplashId: "photo-1517838277536-f5f99be501cd",
+    sets: "4 set x 15-20 marta",
+    steps: "1. Orqa bilan yerga yoting, tizzalarni buking. 2. Qo'llarni bosh ortiga qo'yib, faqat kuraklarni yerdan uzib ko'taring. 3. Qorin mushaklarini siqib, sekin yerga qayting.",
+    biomechanicsTip: "Boshni qo'llar bilan tortmang, butun kuch qorin mushaklariga tushishi kerak."
+  },
+  {
+    id: 'plank',
+    category: 'core',
+    name: "Planka (Plank)",
+    desc: "Butun tana va qorin markaziy (core) mushaklarini statik kuchini oshiruvchi universal mashq.",
+    unsplashId: "photo-1571019613576-2b22c76fd955",
+    sets: "3 set x 60 soniya",
+    steps: "1. Tirsaklar va oyoq uchlariga tayanib turing. 2. Tana boshdan to tovongacha tekis to'g'ri chiziq hosil qilishi lozim. 3. Usbhu holatda qorinni qattiq tortib ushlang.",
+    biomechanicsTip: "Belingiz pastga tushib ketmasligiga yoki dumbangiz juda ko'tarilib ketmasligiga e'tibor bering."
+  }
+];
+
+const ANATOMY_DATABASE = {
+  chest: {
+    name: "Ko'krak mushaklari",
+    latin: "Pectoralis Major & Minor",
+    func: "Qo'llarni gorizontal bo'ylab oldinga olib kelish, ularni ichkariga burish va tana markaziga yaqinlashtirish.",
+    lever: "Uchinchi turdagi dastalash (Third-class lever). Bunda kuch bo'g'imga yaqin joyda qo'llaniladi, bu tez va katta harakat amplitudasini beradi.",
+    do: "Kuraklarni orqaga qisib, ko'krakni baland ko'taring. Harakatning eng yuqori nuqtasida ko'krak mushagini qattiq siqing.",
+    dont: "Yelkalarni oldinga chiqarib yubormang. Bu yuklamani ko'krakdan olib yelka oldi bo'g'imiga tushiradi va jarohatga sabab bo'ladi.",
+    exercises: ['pushups', 'benchpress', 'chest_dips']
+  },
+  shoulders: {
+    name: "Yelka mushaklari",
+    latin: "Deltoideus (Anterior, Lateral, Posterior)",
+    func: "Qo'lni barcha yo'nalishlarda (oldinga, yonga, orqaga) ko'tarish va rotatsiya qilish.",
+    lever: "Uchinchi turdagi dastalash (Third-class lever). Yelka bo'g'imi eng harakatchan va ayni paytda eng beqaror bo'g'im hisoblanadi.",
+    do: "Gantelni ko'targanda elkalarni pastda saqlang va faqat yelka mushaklari kuchi yordamida ko'taring.",
+    dont: "Haddan tashqari og'ir yuk ishlatib, tanangiz bilan tebranmang. Yelka bo'g'imi nozik, shuning uchun nazorat ostida ishlang.",
+    exercises: ['dumbbell_press']
+  },
+  biceps: {
+    name: "Ikki boshli qo'l mushagi (Biceps)",
+    latin: "Biceps Brachii",
+    func: "Tirsak bo'g'imini bukish va bilakni tashqi tomonga burish (supinatsiya).",
+    lever: "Uchinchi turdagi dastalash (Third-class lever). Kuch tirsak bo'g'imidan bir necha sm pastda qo'llaniladi.",
+    do: "Tirsaklaringizni tanangiz yonida mahkam ushlang. Harakatni faqat bilakni bukish orqali bajaring.",
+    dont: "Tirsaklarni oldinga ko'tarmang. Bu holda yuklama oldingi yelka (deltoid) mushagiga o'tib ketadi.",
+    exercises: ['bicep_curls']
+  },
+  triceps: {
+    name: "Uch boshli qo'l mushagi (Triceps)",
+    latin: "Triceps Brachii",
+    func: "Tirsak bo'g'imini yozish (to'g'rilash) va qo'lni orqaga harakatlantirish.",
+    lever: "Birinchi turdagi dastalash (First-class lever) - tayanch nuqtasi (tirsak) kuch va yuklama o'rtasida joylashgan.",
+    do: "Harakat oxirida tirsaklarni to'liq to'g'rilav, tricepsni qattiq siqing.",
+    dont: "Tirsaklarni ikki tomonga yoyib yubormang. Tirsaklar tanaga parallel va yaqin bo'lishi shart.",
+    exercises: ['tricep_pushdowns', 'chest_dips']
+  },
+  abs: {
+    name: "Qorin mushaklari (Press)",
+    latin: "Rectus Abdominis & Obliques",
+    func: "Umurtqani egish (tanani bukish), qorin ichki bosimini saqlash va tana muvozanatini ushlash.",
+    lever: "Moslashuvchan ko'p bo'g'imli dastalash. Butun umurtqa pog'onasi harakat o'qi bo'lib xizmat qiladi.",
+    do: "Tanani ko'targanda qorinni ichkariga torting va umurtqani yumaloq ko'rinishda buking (eging).",
+    dont: "Oyoqlarni to'g'ri ushlab yoki bo'yinni qo'l bilan qattiq tortib mashq qilmang. Bu bel va bo'yinga zarar etkazadi.",
+    exercises: ['crunches', 'plank']
+  },
+  quads: {
+    name: "Sonning oldingi to'rt boshli mushagi (Kvadritseps)",
+    latin: "Quadriceps Femoris",
+    func: "Tizza bo'g'imini yozish (to'g'rilash) va sonni tos suyagi tomonga bukish.",
+    lever: "Uchinchi turdagi dastalash (Third-class lever). Patella (tizza qopqog'i) biomekanik blok vazifasini o'taydi.",
+    do: "Squat (o'tirganda) og'irlikni tovonlarga bering va tizzalarni barmoqlar uchi yo'nalishida yoying.",
+    dont: "O'tirib turganda tizzalaringiz ichkariga qarab bukilib ketmasin. Bu tizza paylariga o'ta xavfli bosim beradi.",
+    exercises: ['squats', 'lunges']
+  },
+  traps: {
+    name: "Trapetsiyasimon mushak (Yelka orqasi)",
+    latin: "Trapezius",
+    func: "Kuraklarni ko'tarish, orqaga tortish va pastga tushirish.",
+    lever: "Uchinchi turdagi dastalash. Bo'yin va orqaning yuqori qismini barqaror ushlab turadi.",
+    do: "Kuraklarni maksimal darajada orqaga va tepaga tortib, orqa mushaklarni qattiq qising.",
+    dont: "Harakatni tez va boshqaruvsiz bajarmang. Bo'yin umurtqasini zo'riqtirib qo'yishingiz mumkin.",
+    exercises: ['pullups', 'dumbbell_row']
+  },
+  lats: {
+    name: "Keng orqa mushaklari",
+    latin: "Latissimus Dorsi",
+    func: "Qo'llarni tanaga yaqinlashtirish (adduksiya), orqaga tortish va ichkariga burish.",
+    lever: "Uchinchi turdagi dastalash. Tana skeletining eng katta mushaklaridan biri.",
+    do: "Tortishish harakatida tirsaklaringiz orqa tomonga qarab yo'naltirilsin va kuraklarni pastga birlashtiring.",
+    dont: "Harakatni faqat biceps (qo'l) kuchi bilan tortmang. Harakatni tirsakdan boshlab orqa mushak bilan bajaring.",
+    exercises: ['pullups', 'dumbbell_row']
+  },
+  glutes: {
+    name: "Dumba mushaklari",
+    latin: "Gluteus Maximus",
+    func: "Tos bo'g'imini yozish (oyoqni orqaga cho'zish) va sonni tashqariga burish.",
+    lever: "Uchinchi turdagi dastalash. Tik yurish va yugurishda eng asosiy energiya generatori.",
+    do: "Squat yoki lunges harakatida dumbani to'liq orqaga chiqaring va ko'tarilganda dumba mushagini qattiq siqing.",
+    dont: "Yuklamani belingizga tushirmang. Tos sohasini haddan tashqari oldinga chiqarib, belni zo'riqtirmang.",
+    exercises: ['squats', 'lunges']
+  },
+  hamstrings: {
+    name: "Son orqasi va boldir mushaklari",
+    latin: "Hamstrings & Gastrocnemius",
+    func: "Tizzani bukish va son bo'g'imini yozish hamda tovonni ko'tarish.",
+    lever: "Uchinchi turdagi dastalash. Oyoqning orqa qismini barqarorlashtirish va harakatlanish (yugurish) uchun javobgar.",
+    do: "Squat mashqida son parallel chiziqdan pastroqqa tushganda son orqasi maksimal darajada cho'ziladi va ishga tushadi.",
+    dont: "Oyoqlarni to'liq to'g'rilab og'irlik ko'targanda belingizni bukib ketishiga yo'l qo'ymang.",
+    exercises: ['squats', 'lunges']
+  }
 };
 
 // --- DOM ELEMENTS ---
@@ -261,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDashboard();
     setupDiary();
     setupWorkouts();
+    initWorkoutSubTabs();
     setupChatScreen();
     setupProfileScreen();
     setupBmiAndIdealWeight();
@@ -1047,12 +1269,246 @@ function addWorkout(exercise) {
   setupWorkouts();
 }
 
+}
+
 function deleteWorkout(index) {
   STATE.workouts.splice(index, 1);
   saveStateToLocalStorage();
   setupDashboard();
   setupWorkouts();
 }
+
+// --- WORKOUT SUB-TABS, OFFLINE GUIDE & SVG ANATOMICAL MAP LOGIC ---
+
+function initWorkoutSubTabs() {
+  if (STATE.workoutSubTabsInitialized) {
+    // Just refresh the active view without duplicate event binding
+    switchWorkoutTab(STATE.activeWorkoutTab);
+    return;
+  }
+
+  // 1. Bind Sub-Tab navigation buttons
+  document.querySelectorAll('.workout-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchWorkoutTab(btn.dataset.target);
+    });
+  });
+
+  // 2. Bind Category Filter Chips
+  document.querySelectorAll('.category-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      STATE.selectedWorkoutCategory = chip.dataset.category;
+      renderWorkoutGuide();
+    });
+  });
+
+  // 3. Bind SVG Muscle Hotspots
+  document.querySelectorAll('.muscle-group').forEach(group => {
+    group.addEventListener('click', () => {
+      document.querySelectorAll('.muscle-group').forEach(g => g.classList.remove('selected'));
+      
+      const muscleId = group.dataset.muscle;
+      
+      // Select corresponding groups in BOTH Front and Back SVGs if they exist
+      document.querySelectorAll(`.muscle-group[data-muscle="${muscleId}"]`).forEach(g => {
+        g.classList.add('selected');
+      });
+      
+      STATE.selectedAnatomyMuscle = muscleId;
+      renderAnatomyProfile();
+      
+      // Scroll smoothly to results card on mobile
+      const resultBox = document.getElementById('anatomy-result-box');
+      if (resultBox) {
+        resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  });
+
+  // 4. Bind Front/Back anatomical view switchers
+  const btnFront = document.getElementById('btn-anatomy-front');
+  const btnBack = document.getElementById('btn-anatomy-back');
+  const svgFront = document.getElementById('anatomy-svg-front');
+  const svgBack = document.getElementById('anatomy-svg-back');
+
+  if (btnFront && btnBack && svgFront && svgBack) {
+    btnFront.addEventListener('click', () => {
+      btnFront.classList.add('active');
+      btnBack.classList.remove('active');
+      svgFront.classList.remove('hidden');
+      svgBack.classList.add('hidden');
+    });
+
+    btnBack.addEventListener('click', () => {
+      btnBack.classList.add('active');
+      btnFront.classList.remove('active');
+      svgBack.classList.remove('hidden');
+      svgFront.classList.add('hidden');
+    });
+  }
+
+  // Draw initial guide/anatomy views
+  STATE.workoutSubTabsInitialized = true;
+  switchWorkoutTab(STATE.activeWorkoutTab);
+}
+
+function switchWorkoutTab(targetTabId) {
+  STATE.activeWorkoutTab = targetTabId;
+
+  // Toggle active sub-tab nav button
+  document.querySelectorAll('.workout-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.target === targetTabId);
+  });
+
+  // Toggle visible panels
+  document.querySelectorAll('.workout-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === targetTabId);
+    panel.classList.toggle('hidden', panel.id !== targetTabId);
+  });
+
+  if (targetTabId === 'workout-guide-panel') {
+    renderWorkoutGuide();
+  } else if (targetTabId === 'workout-anatomy-panel') {
+    setupAnatomyView();
+  }
+}
+
+function renderWorkoutGuide() {
+  const container = document.getElementById('exercise-guide-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const filtered = STATE.selectedWorkoutCategory === 'all'
+    ? EXERCISES_DATABASE
+    : EXERCISES_DATABASE.filter(ex => ex.category === STATE.selectedWorkoutCategory);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p>Ushbu kategoriya bo'yicha mashqlar topilmadi.</p></div>`;
+    return;
+  }
+
+  filtered.forEach(ex => {
+    const card = document.createElement('div');
+    card.className = 'card guide-card';
+    
+    // Convert English category tag to display name
+    let catUzbek = "Mashq";
+    if (ex.category === 'chest') catUzbek = "Ko'krak";
+    else if (ex.category === 'back') catUzbek = "Orqa";
+    else if (ex.category === 'legs') catUzbek = "Oyoq";
+    else if (ex.category === 'arms') catUzbek = "Qo'l & Yelka";
+    else if (ex.category === 'core') catUzbek = "Qorin";
+
+    card.innerHTML = `
+      <div class="guide-card-img-wrapper">
+        <span class="guide-card-badge">${catUzbek}</span>
+        <img src="https://images.unsplash.com/${ex.unsplashId}&auto=format&fit=crop&w=400&q=80" alt="${ex.name}" class="guide-card-img" onerror="this.src='icons/icon-192.png'">
+      </div>
+      <div class="guide-card-content">
+        <h4 class="guide-card-title">${ex.name}</h4>
+        <p class="guide-card-desc">${ex.desc}</p>
+        <div class="guide-card-desc" style="font-size:0.76rem;background:rgba(255,255,255,0.015);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);line-height:1.45;">
+          <strong style="color:var(--primary);">Bajarish texnikasi:</strong><br>${ex.steps}
+        </div>
+        <div class="guide-card-meta">
+          <span class="guide-meta-item" title="Tavsiya etilgan yuklama"><i data-lucide="repeat"></i> <span class="guide-meta-val">${ex.sets}</span></span>
+          <span class="guide-meta-item" style="cursor:help;color:var(--accent-green);" title="${ex.biomechanicsTip}"><i data-lucide="shield-alert"></i> Bio-Maslahat</span>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  lucide.createIcons();
+}
+
+function setupAnatomyView() {
+  // Sync selected visual class highlights
+  document.querySelectorAll('.muscle-group').forEach(g => g.classList.remove('selected'));
+  if (STATE.selectedAnatomyMuscle) {
+    document.querySelectorAll(`.muscle-group[data-muscle="${STATE.selectedAnatomyMuscle}"]`).forEach(g => {
+      g.classList.add('selected');
+    });
+  }
+  renderAnatomyProfile();
+}
+
+function renderAnatomyProfile() {
+  const resultBox = document.getElementById('anatomy-result-box');
+  if (!resultBox) return;
+
+  if (!STATE.selectedAnatomyMuscle) {
+    resultBox.innerHTML = `
+      <div class="result-placeholder">
+        <i data-lucide="info" class="placeholder-icon"></i>
+        <p>Tahlil olish uchun tana sxemasidan biror muskulni bosing...</p>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  const profile = ANATOMY_DATABASE[STATE.selectedAnatomyMuscle];
+  if (!profile) return;
+
+  // Build targeted exercises cards list
+  let exercisesHtml = '';
+  profile.exercises.forEach(exId => {
+    const ex = EXERCISES_DATABASE.find(e => e.id === exId);
+    if (ex) {
+      exercisesHtml += `
+        <div class="anatomy-exercise-card">
+          <img src="https://images.unsplash.com/${ex.unsplashId}&auto=format&fit=crop&w=120&q=80" alt="${ex.name}" class="anatomy-exercise-img" onerror="this.src='icons/icon-192.png'">
+          <div class="anatomy-exercise-details">
+            <span class="anatomy-exercise-name">${ex.name}</span>
+            <span class="anatomy-exercise-sets">${ex.sets}</span>
+            <span class="anatomy-exercise-tip"><strong style="color:var(--accent-green)">Texnika:</strong> ${ex.biomechanicsTip}</span>
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  resultBox.innerHTML = `
+    <div class="anatomy-result-content">
+      <div class="anatomy-header">
+        <div class="anatomy-title-row">
+          <h3>${profile.name}</h3>
+          <span class="anatomy-latin">${profile.latin}</span>
+        </div>
+        <p class="anatomy-function"><strong>Asosiy funksiyasi:</strong> ${profile.func}</p>
+      </div>
+
+      <div class="biomechanics-lever-info">
+        <i data-lucide="git-branch"></i>
+        <span><strong>Biomekanik kuch leveri:</strong> ${profile.lever}</span>
+      </div>
+
+      <div class="biomechanics-box">
+        <div class="correct-box">
+          <span class="box-title"><i data-lucide="check-circle"></i> To'g'ri bajarish (DO)</span>
+          <span class="box-txt">${profile.do}</span>
+        </div>
+        <div class="error-box">
+          <span class="box-title"><i data-lucide="alert-triangle"></i> Xato bajarish (DON'T)</span>
+          <span class="box-txt">${profile.dont}</span>
+        </div>
+      </div>
+
+      <div class="anatomy-exercises-section">
+        <h4><i data-lucide="dumbbell"></i> Tavsiya etilgan mashqlar:</h4>
+        <div class="anatomy-exercises-list">
+          ${exercisesHtml || '<p class="box-txt">Ushbu guruh uchun mashqlar ro\'yxati tuzilmagan.</p>'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  lucide.createIcons();
+}
+
 
 // --- BMI AND IDEAL WEIGHT ANALYZER (WHO Standards) ---
 
@@ -2205,6 +2661,7 @@ function setupEventListeners() {
     setupWorkouts();
     setupProfileScreen();
     setupBmiAndIdealWeight();
+    initWorkoutSubTabs();
     switchTab('screen-dashboard');
   });
 
