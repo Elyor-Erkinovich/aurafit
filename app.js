@@ -476,21 +476,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Check Onboarding
   if (!STATE.profile) {
-    showWizard();
+    try {
+      showWizard();
+    } catch (e) {
+      console.warn("Wizard initialization error", e);
+    }
   } else {
-    hideWizard();
-    setupDashboard();
-    setupDiary();
-    setupWorkouts();
-    initWorkoutSubTabs();
-    setupChatScreen();
-    setupProfileScreen();
-    setupBmiAndIdealWeight();
+    try { hideWizard(); } catch (e) { console.warn("hideWizard error", e); }
+    try { setupDashboard(); } catch (e) { console.warn("setupDashboard error", e); }
+    try { setupDiary(); } catch (e) { console.warn("setupDiary error", e); }
+    try { setupWorkouts(); } catch (e) { console.warn("setupWorkouts error", e); }
+    try { initWorkoutSubTabs(); } catch (e) { console.warn("initWorkoutSubTabs error", e); }
+    try { setupChatScreen(); } catch (e) { console.warn("setupChatScreen error", e); }
+    try { setupProfileScreen(); } catch (e) { console.warn("setupProfileScreen error", e); }
+    try { setupBmiAndIdealWeight(); } catch (e) { console.warn("setupBmiAndIdealWeight error", e); }
     
     // Draw initial progress charts safely
     setTimeout(() => {
-      renderWeightTrendChart();
-      renderCalorieHistoryChart();
+      try { renderWeightTrendChart(); } catch (e) { console.warn("renderWeightTrendChart error", e); }
+      try { renderCalorieHistoryChart(); } catch (e) { console.warn("renderCalorieHistoryChart error", e); }
     }, 300);
   }
 
@@ -502,10 +506,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Setup Event Listeners
-  setupEventListeners();
+  try {
+    setupEventListeners();
+  } catch (e) {
+    console.error("Critical: Event listeners setup failed", e);
+  }
   
   // Update Exercise Burn Estimate
-  updateWorkoutCaloriePreview();
+  try {
+    updateWorkoutCaloriePreview();
+  } catch (e) {
+    console.warn("updateWorkoutCaloriePreview error", e);
+  }
 });
 
 // --- HELPER FUNCTIONS ---
@@ -1267,8 +1279,6 @@ function addWorkout(exercise) {
   saveStateToLocalStorage();
   setupDashboard();
   setupWorkouts();
-}
-
 }
 
 function deleteWorkout(index) {
