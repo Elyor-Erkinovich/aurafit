@@ -1,6 +1,6 @@
 /* AuraFit — Service Worker for offline asset caching */
 
-const CACHE_NAME = 'aurafit-v2';
+const CACHE_NAME = 'aurafit-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

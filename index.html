@@ -861,6 +861,74 @@
                   <!-- BACK VIEW CARD FACE -->
                   <div class="anatomy-card-face face-back">
                     <svg viewBox="0 0 200 400" class="anatomy-svg" id="anatomy-svg-back">
+                      <defs>
+                        <filter id="shadow-3d" x="-10%" y="-10%" width="120%" height="120%">
+                          <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.5"/>
+                        </filter>
+                        <pattern id="scanlines" width="6" height="6" patternUnits="userSpaceOnUse">
+                          <line x1="0" y1="0" x2="6" y2="0" stroke="rgba(56, 189, 248, 0.04)" stroke-width="1.5" />
+                        </pattern>
+                        <radialGradient id="body-backdrop-grad" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stop-color="#0f172a" />
+                          <stop offset="70%" stop-color="#090d16" />
+                          <stop offset="100%" stop-color="#020408" />
+                        </radialGradient>
+                        <radialGradient id="muscle-chest-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#fb923c" />
+                          <stop offset="65%" stop-color="#ea580c" />
+                          <stop offset="100%" stop-color="#7c2d12" />
+                        </radialGradient>
+                        <radialGradient id="muscle-abs-grad" cx="50%" cy="50%" r="65%">
+                          <stop offset="0%" stop-color="#4ade80" />
+                          <stop offset="65%" stop-color="#16a34a" />
+                          <stop offset="100%" stop-color="#14532d" />
+                        </radialGradient>
+                        <radialGradient id="muscle-arms-grad" cx="50%" cy="50%" r="60%">
+                          <stop offset="0%" stop-color="#38bdf8" />
+                          <stop offset="70%" stop-color="#0284c7" />
+                          <stop offset="100%" stop-color="#0c4a6e" />
+                        </radialGradient>
+                        <radialGradient id="muscle-legs-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#f472b6" />
+                          <stop offset="65%" stop-color="#db2777" />
+                          <stop offset="100%" stop-color="#831843" />
+                        </radialGradient>
+                        <radialGradient id="muscle-shoulders-grad" cx="50%" cy="50%" r="60%">
+                          <stop offset="0%" stop-color="#c084fc" />
+                          <stop offset="70%" stop-color="#9333ea" />
+                          <stop offset="100%" stop-color="#581c87" />
+                        </radialGradient>
+                        <radialGradient id="muscle-traps-grad" cx="50%" cy="50%" r="60%">
+                          <stop offset="0%" stop-color="#a855f7" />
+                          <stop offset="70%" stop-color="#7e22ce" />
+                          <stop offset="100%" stop-color="#4c1d95" />
+                        </radialGradient>
+                        <radialGradient id="muscle-lats-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#ffedd5" />
+                          <stop offset="65%" stop-color="#f97316" />
+                          <stop offset="100%" stop-color="#9a3412" />
+                        </radialGradient>
+                        <radialGradient id="muscle-glutes-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#f472b6" />
+                          <stop offset="65%" stop-color="#db2777" />
+                          <stop offset="100%" stop-color="#700d3a" />
+                        </radialGradient>
+                        <radialGradient id="muscle-hamstrings-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#fda4af" />
+                          <stop offset="65%" stop-color="#f43f5e" />
+                          <stop offset="100%" stop-color="#881337" />
+                        </radialGradient>
+                        <radialGradient id="muscle-neck-grad" cx="50%" cy="50%" r="60%">
+                          <stop offset="0%" stop-color="#f59e0b" />
+                          <stop offset="70%" stop-color="#d97706" />
+                          <stop offset="100%" stop-color="#78350f" />
+                        </radialGradient>
+                        <radialGradient id="muscle-calves-grad" cx="50%" cy="50%" r="70%">
+                          <stop offset="0%" stop-color="#10b981" />
+                          <stop offset="70%" stop-color="#059669" />
+                          <stop offset="100%" stop-color="#064e3b" />
+                        </radialGradient>
+                      </defs>
                       <rect width="100%" height="100%" fill="url(#scanlines)" pointer-events="none" />
                       <!-- Body Backdrop Outline -->
                       <path d="M100,20 C112,20 122,30 122,42 C122,54 112,64 100,64 C88,64 78,54 78,42 C78,30 88,20 100,20 Z M94,64 L106,64 L106,80 L94,80 Z M65,80 L135,80 C145,80 152,87 152,95 L145,210 C145,212 142,215 140,215 L60,215 C58,215 55,212 55,210 L48,95 C48,87 55,80 65,80 Z M68,215 L95,215 L90,320 L75,320 Z M105,215 L132,215 L125,320 L110,320 Z M75,320 L88,320 L85,380 L78,380 Z M112,320 L125,320 L122,380 L115,380 Z" fill="url(#body-backdrop-grad)" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.8" filter="url(#shadow-3d)"/>

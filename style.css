@@ -2990,6 +2990,7 @@ a:hover {
   max-width: 250px;
   height: 400px;
   perspective: 1000px;
+  touch-action: pan-y;
 }
 
 .anatomy-card-inner {
@@ -2999,6 +3000,7 @@ a:hover {
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
+  touch-action: pan-y;
 }
 
 .anatomy-card-inner.flipped {
@@ -3018,11 +3020,20 @@ a:hover {
 
 .face-front {
   transform: rotateY(0deg);
-  z-index: 2;
+  pointer-events: auto;
 }
 
 .face-back {
   transform: rotateY(180deg);
+  pointer-events: none;
+}
+
+.anatomy-card-inner.flipped .face-front {
+  pointer-events: none;
+}
+
+.anatomy-card-inner.flipped .face-back {
+  pointer-events: auto;
 }
 
 .anatomy-svg {
