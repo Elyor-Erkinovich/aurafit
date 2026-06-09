@@ -1359,9 +1359,52 @@ function initWorkoutSubTabs() {
     });
   }
 
+  // Bind Biomechanics tip modal trigger on click
+  const guideContainer = document.getElementById('exercise-guide-container');
+  if (guideContainer) {
+    guideContainer.addEventListener('click', (e) => {
+      const tipBtn = e.target.closest('.btn-bio-tip');
+      if (tipBtn) {
+        const name = tipBtn.dataset.name;
+        const tip = tipBtn.dataset.tip;
+        showBioTipModal(name, tip);
+      }
+    });
+  }
+
   // Draw initial guide/anatomy views
   STATE.workoutSubTabsInitialized = true;
   switchWorkoutTab(STATE.activeWorkoutTab);
+}
+
+function showBioTipModal(exerciseName, tipContent) {
+  const existing = document.getElementById('modal-dynamic-bio-tip');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-dynamic-bio-tip';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-container card" style="max-height: 80vh;">
+      <div class="modal-header">
+        <h3 class="modal-title title-gradient" style="display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="shield-alert" style="color:var(--accent-green)"></i> Biomekanika Maslahati
+        </h3>
+        <button class="modal-close" onclick="document.getElementById('modal-dynamic-bio-tip').remove()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <h4 style="margin-bottom: 12px; color: var(--primary); font-size: 1.05rem;">${exerciseName}</h4>
+        <p style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; color: var(--text-sub); line-height: 1.6; font-size: 0.9rem;">
+          ${tipContent}
+        </p>
+      </div>
+      <div class="modal-footer" style="padding-top: 10px;">
+        <button class="btn btn-accent flex-1" onclick="document.getElementById('modal-dynamic-bio-tip').remove()">Tushunarli <i data-lucide="check"></i></button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  lucide.createIcons();
 }
 
 function switchWorkoutTab(targetTabId) {
@@ -1414,7 +1457,7 @@ function renderWorkoutGuide() {
     card.innerHTML = `
       <div class="guide-card-img-wrapper">
         <span class="guide-card-badge">${catUzbek}</span>
-        <img src="https://images.unsplash.com/${ex.unsplashId}&auto=format&fit=crop&w=400&q=80" alt="${ex.name}" class="guide-card-img" onerror="this.src='icons/icon-192.png'">
+        <img src="https://images.unsplash.com/${ex.unsplashId}?auto=format&fit=crop&w=400&q=80" alt="${ex.name}" class="guide-card-img" onerror="this.src='icons/icon-192.png'">
       </div>
       <div class="guide-card-content">
         <h4 class="guide-card-title">${ex.name}</h4>
@@ -1424,7 +1467,7 @@ function renderWorkoutGuide() {
         </div>
         <div class="guide-card-meta">
           <span class="guide-meta-item" title="Tavsiya etilgan yuklama"><i data-lucide="repeat"></i> <span class="guide-meta-val">${ex.sets}</span></span>
-          <span class="guide-meta-item" style="cursor:help;color:var(--accent-green);" title="${ex.biomechanicsTip}"><i data-lucide="shield-alert"></i> Bio-Maslahat</span>
+          <span class="guide-meta-item btn-bio-tip" style="cursor:pointer;color:var(--accent-green);font-weight:600;" data-name="${escapeHTML(ex.name)}" data-tip="${escapeHTML(ex.biomechanicsTip)}"><i data-lucide="shield-alert"></i> Bio-Maslahat</span>
         </div>
       </div>
     `;
@@ -1470,7 +1513,7 @@ function renderAnatomyProfile() {
     if (ex) {
       exercisesHtml += `
         <div class="anatomy-exercise-card">
-          <img src="https://images.unsplash.com/${ex.unsplashId}&auto=format&fit=crop&w=120&q=80" alt="${ex.name}" class="anatomy-exercise-img" onerror="this.src='icons/icon-192.png'">
+          <img src="https://images.unsplash.com/${ex.unsplashId}?auto=format&fit=crop&w=120&q=80" alt="${ex.name}" class="anatomy-exercise-img" onerror="this.src='icons/icon-192.png'">
           <div class="anatomy-exercise-details">
             <span class="anatomy-exercise-name">${ex.name}</span>
             <span class="anatomy-exercise-sets">${ex.sets}</span>

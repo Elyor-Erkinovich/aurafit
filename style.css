@@ -2997,23 +2997,36 @@ a:hover {
 }
 
 .muscle-path {
-  fill: rgba(255, 255, 255, 0.035);
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 1.5;
+  stroke-width: 1.2;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
 }
 
+/* 3D Muscle Gradients mapping */
+.muscle-group[data-muscle="shoulders"] .muscle-path { fill: url(#muscle-shoulders-grad); stroke: rgba(168, 85, 247, 0.4); }
+.muscle-group[data-muscle="chest"] .muscle-path { fill: url(#muscle-chest-grad); stroke: rgba(249, 115, 22, 0.4); }
+.muscle-group[data-muscle="biceps"] .muscle-path { fill: url(#muscle-arms-grad); stroke: rgba(56, 189, 248, 0.4); }
+.muscle-group[data-muscle="triceps"] .muscle-path { fill: url(#muscle-arms-grad); stroke: rgba(56, 189, 248, 0.4); }
+.muscle-group[data-muscle="abs"] .muscle-path { fill: url(#muscle-abs-grad); stroke: rgba(16, 185, 129, 0.4); }
+.muscle-group[data-muscle="quads"] .muscle-path { fill: url(#muscle-legs-grad); stroke: rgba(219, 39, 119, 0.4); }
+.muscle-group[data-muscle="traps"] .muscle-path { fill: url(#muscle-traps-grad); stroke: rgba(168, 85, 247, 0.4); }
+.muscle-group[data-muscle="lats"] .muscle-path { fill: url(#muscle-lats-grad); stroke: rgba(249, 115, 22, 0.4); }
+.muscle-group[data-muscle="glutes"] .muscle-path { fill: url(#muscle-glutes-grad); stroke: rgba(219, 39, 119, 0.4); }
+.muscle-group[data-muscle="hamstrings"] .muscle-path { fill: url(#muscle-hamstrings-grad); stroke: rgba(244, 63, 94, 0.4); }
+
 .muscle-group:hover .muscle-path {
-  fill: rgba(168, 85, 247, 0.25);
-  stroke: rgba(168, 85, 247, 0.6);
-  filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.4));
+  filter: drop-shadow(0 0 8px var(--primary-glow)) brightness(1.2);
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 1.8px;
+  opacity: 0.95;
 }
 
 .muscle-group.selected .muscle-path {
-  fill: rgba(16, 185, 129, 0.3);
-  stroke: var(--accent-green);
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+  filter: drop-shadow(0 0 12px var(--primary)) brightness(1.35);
+  stroke: #ffffff;
+  stroke-width: 2px;
+  opacity: 1;
 }
 
 .muscle-label-txt {
