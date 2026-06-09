@@ -2980,16 +2980,55 @@ a:hover {
   border-radius: 16px;
   padding: 20px;
   position: relative;
-  overflow: hidden;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+  perspective: 1000px;
+  min-height: 440px;
+}
+
+.anatomy-card-perspective {
+  width: 100%;
+  max-width: 250px;
+  height: 400px;
+  perspective: 1000px;
+}
+
+.anatomy-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.anatomy-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.anatomy-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.face-back {
+  transform: rotateY(180deg);
 }
 
 .anatomy-svg {
   width: 100%;
-  max-width: 250px;
-  height: auto;
+  height: 100%;
   filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.05));
-  transition: opacity 0.3s ease;
 }
 
 .anatomy-svg.hidden {
@@ -3004,6 +3043,7 @@ a:hover {
 }
 
 /* 3D Muscle Gradients mapping */
+.muscle-group[data-muscle="neck"] .muscle-path { fill: url(#muscle-neck-grad); stroke: rgba(245, 158, 11, 0.4); }
 .muscle-group[data-muscle="shoulders"] .muscle-path { fill: url(#muscle-shoulders-grad); stroke: rgba(168, 85, 247, 0.4); }
 .muscle-group[data-muscle="chest"] .muscle-path { fill: url(#muscle-chest-grad); stroke: rgba(249, 115, 22, 0.4); }
 .muscle-group[data-muscle="biceps"] .muscle-path { fill: url(#muscle-arms-grad); stroke: rgba(56, 189, 248, 0.4); }
@@ -3014,6 +3054,7 @@ a:hover {
 .muscle-group[data-muscle="lats"] .muscle-path { fill: url(#muscle-lats-grad); stroke: rgba(249, 115, 22, 0.4); }
 .muscle-group[data-muscle="glutes"] .muscle-path { fill: url(#muscle-glutes-grad); stroke: rgba(219, 39, 119, 0.4); }
 .muscle-group[data-muscle="hamstrings"] .muscle-path { fill: url(#muscle-hamstrings-grad); stroke: rgba(244, 63, 94, 0.4); }
+.muscle-group[data-muscle="calves"] .muscle-path { fill: url(#muscle-calves-grad); stroke: rgba(16, 185, 129, 0.4); }
 
 .muscle-group:hover .muscle-path {
   filter: drop-shadow(0 0 8px var(--primary-glow)) brightness(1.2);

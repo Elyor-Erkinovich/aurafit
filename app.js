@@ -164,6 +164,26 @@ const EXERCISES_DATABASE = [
     sets: "3 set x 60 soniya",
     steps: "1. Tirsaklar va oyoq uchlariga tayanib turing. 2. Tana boshdan to tovongacha tekis to'g'ri chiziq hosil qilishi lozim. 3. Usbhu holatda qorinni qattiq tortib ushlang.",
     biomechanicsTip: "Belingiz pastga tushib ketmasligiga yoki dumbangiz juda ko'tarilib ketmasligiga e'tibor bering."
+  },
+  {
+    id: 'neck_extension',
+    category: 'back',
+    name: "Bo'yin mushaklarini chiniqtirish (Neck Extension)",
+    desc: "Bo'yin orqa va yon mushaklarini kuchaytiruvchi va umurtqa pog'onasini himoyalovchi maxsus mashq.",
+    unsplashId: "photo-1544367567-0f2fcb009e0b",
+    sets: "3 set x 12-15 marta",
+    steps: "1. Qo'llaringizni orqaga yoki peshonaga tayab, boshni sekin qarshilik bilan oldinga-orqaga harakatlantiring. 2. Harakatni o'ta sekin va nazorat ostida bajaring.",
+    biomechanicsTip: "Haddan tashqari keskin harakatlar qilmang. Bo'yin umurtqalari juda nozik bo'lgani sababli, yuklamani o'ta ehtiyotkorlik bilan berish lozim."
+  },
+  {
+    id: 'calf_raises',
+    category: 'legs',
+    name: "Boldir mushaklarini ko'tarish (Calf Raises)",
+    desc: "Boldirning gastroknemius va soleus mushaklarini rivojlantiruvchi eng samarali mashq.",
+    unsplashId: "photo-1596464716127-f2a82984de30",
+    sets: "4 set x 15-20 marta",
+    steps: "1. Biror balandlik chetida turing (tovonlar osilib tursin). 2. Oyoq uchlarida iloji boricha yuqoriga ko'taring. 3. Tovonlarni maksimal pastga tushirib boldirni cho'zing.",
+    biomechanicsTip: "Harakatning eng yuqori nuqtasida boldirlarni 1 soniya qisib turing. Pastga tushayotganda sekin, sakrashlarsiz nazorat bilan tushing."
   }
 ];
 
@@ -257,6 +277,24 @@ const ANATOMY_DATABASE = {
     do: "Squat mashqida son parallel chiziqdan pastroqqa tushganda son orqasi maksimal darajada cho'ziladi va ishga tushadi.",
     dont: "Oyoqlarni to'liq to'g'rilab og'irlik ko'targanda belingizni bukib ketishiga yo'l qo'ymang.",
     exercises: ['squats', 'lunges']
+  },
+  neck: {
+    name: "Bo'yin mushaklari",
+    latin: "Splenius capitis & Sternocleidomastoideus",
+    func: "Boshni burish, egish, tik ushlab turish va bo'yin umurtqasini himoya qilish.",
+    lever: "Birinchi turdagi dastalash (First-class lever) - boshning og'irlik markazi va bo'yin mushaklari muvozanat nuqtasi atrofida ishlaydi.",
+    do: "Mashqlarni sekin bajarib, boshni orqaga cho'zayotganda ehtiyot bo'ling. Doimo bo'yinni tekis ushlang.",
+    dont: "Katlarni tez va siltab bajarmang, boshni orqaga keskin tashlamang (bu bo'yin nervlarini siqib qo'yishi mumkin).",
+    exercises: ['neck_extension']
+  },
+  calves: {
+    name: "Boldir mushaklari",
+    latin: "Gastrocnemius & Soleus",
+    func: "Tovonni ko'tarish, tizzani bukishda yordam berish va sakrash/yugurish harakatlarini ta'minlash.",
+    lever: "Ikkinchi turdagi dastalash (Second-class lever) - og'irlik markazi tayanch (oyoq uchi) va kuch (axill payi) o'rtasida joylashgan. Bu juda kuchli mexanik ustunlik beradi.",
+    do: "Harakat amplitudasini to'liq qiling - tovonni maksimal pastga tushiring va yuqorida boldirni to'liq qising.",
+    dont: "Mashqni tez-tez va sakrab-sakrab bajarmang, chunki bu holda yuklama mushakka emas, balki axill payiga tushadi.",
+    exercises: ['calf_raises']
   }
 };
 
@@ -1337,26 +1375,54 @@ function initWorkoutSubTabs() {
     });
   });
 
-  // 4. Bind Front/Back anatomical view switchers
+  // 4. Bind Front/Back 3D anatomical view card flip switchers
   const btnFront = document.getElementById('btn-anatomy-front');
   const btnBack = document.getElementById('btn-anatomy-back');
-  const svgFront = document.getElementById('anatomy-svg-front');
-  const svgBack = document.getElementById('anatomy-svg-back');
-
-  if (btnFront && btnBack && svgFront && svgBack) {
+  const cardInner = document.getElementById('anatomy-card-inner');
+  
+  if (btnFront && btnBack && cardInner) {
     btnFront.addEventListener('click', () => {
       btnFront.classList.add('active');
       btnBack.classList.remove('active');
-      svgFront.classList.remove('hidden');
-      svgBack.classList.add('hidden');
+      cardInner.classList.remove('flipped');
     });
 
     btnBack.addEventListener('click', () => {
       btnBack.classList.add('active');
       btnFront.classList.remove('active');
-      svgBack.classList.remove('hidden');
-      svgFront.classList.add('hidden');
+      cardInner.classList.add('flipped');
     });
+
+    // Touch swipe gesture logic for buttery smooth mobile mannequin spinning
+    let startX = 0;
+    cardInner.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    cardInner.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diffX = endX - startX;
+      
+      // Swipe threshold is 50 pixels
+      if (Math.abs(diffX) > 50) {
+        const isCurrentlyFlipped = cardInner.classList.contains('flipped');
+        if (diffX > 0) {
+          // Swipe Right -> Show Front (remove flipped class)
+          if (isCurrentlyFlipped) {
+            cardInner.classList.remove('flipped');
+            btnFront.classList.add('active');
+            btnBack.classList.remove('active');
+          }
+        } else {
+          // Swipe Left -> Show Back (add flipped class)
+          if (!isCurrentlyFlipped) {
+            cardInner.classList.add('flipped');
+            btnBack.classList.add('active');
+            btnFront.classList.remove('active');
+          }
+        }
+      }
+    }, { passive: true });
   }
 
   // Bind Biomechanics tip modal trigger on click
