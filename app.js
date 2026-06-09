@@ -1395,48 +1395,54 @@ function initWorkoutSubTabs() {
 
     // Touch swipe gesture logic for buttery smooth mobile mannequin spinning
     let startX = 0;
-    cardInner.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    }, { passive: true });
+    const swipeContainer = document.querySelector('.anatomy-maps-container');
+    if (swipeContainer) {
+      swipeContainer.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+      }, { passive: true });
 
-    cardInner.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const diffX = endX - startX;
-      
-      // Swipe threshold is 50 pixels
-      if (Math.abs(diffX) > 50) {
-        const isCurrentlyFlipped = cardInner.classList.contains('flipped');
-        if (diffX > 0) {
-          // Swipe Right -> Show Front (remove flipped class)
-          if (isCurrentlyFlipped) {
-            cardInner.classList.remove('flipped');
-            btnFront.classList.add('active');
-            btnBack.classList.remove('active');
-          }
-        } else {
-          // Swipe Left -> Show Back (add flipped class)
-          if (!isCurrentlyFlipped) {
-            cardInner.classList.add('flipped');
-            btnBack.classList.add('active');
-            btnFront.classList.remove('active');
+      swipeContainer.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = endX - startX;
+        
+        // Swipe threshold is 50 pixels
+        if (Math.abs(diffX) > 50) {
+          const isCurrentlyFlipped = cardInner.classList.contains('flipped');
+          if (diffX > 0) {
+            // Swipe Right -> Show Front (remove flipped class)
+            if (isCurrentlyFlipped) {
+              cardInner.classList.remove('flipped');
+              btnFront.classList.add('active');
+              btnBack.classList.remove('active');
+            }
+          } else {
+            // Swipe Left -> Show Back (add flipped class)
+            if (!isCurrentlyFlipped) {
+              cardInner.classList.add('flipped');
+              btnBack.classList.add('active');
+              btnFront.classList.remove('active');
+            }
           }
         }
-      }
-    }, { passive: true });
+      }, { passive: true });
+    }
   }
 
-  // Bind Biomechanics tip modal trigger on click
+  // Bind Biomechanics tip modal trigger on click for both guide and anatomy views
+  const tipClickHandler = (e) => {
+    const tipBtn = e.target.closest('.btn-bio-tip');
+    if (tipBtn) {
+      const name = tipBtn.dataset.name;
+      const tip = tipBtn.dataset.tip;
+      showBioTipModal(name, tip);
+    }
+  };
+
   const guideContainer = document.getElementById('exercise-guide-container');
-  if (guideContainer) {
-    guideContainer.addEventListener('click', (e) => {
-      const tipBtn = e.target.closest('.btn-bio-tip');
-      if (tipBtn) {
-        const name = tipBtn.dataset.name;
-        const tip = tipBtn.dataset.tip;
-        showBioTipModal(name, tip);
-      }
-    });
-  }
+  if (guideContainer) guideContainer.addEventListener('click', tipClickHandler);
+
+  const anatomyResultBox = document.getElementById('anatomy-result-box');
+  if (anatomyResultBox) anatomyResultBox.addEventListener('click', tipClickHandler);
 
   // Draw initial guide/anatomy views
   STATE.workoutSubTabsInitialized = true;
