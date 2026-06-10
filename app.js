@@ -53,7 +53,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1571019614242-c5c5dee9f50b",
     sets: "3-4 set x 12-15 marta",
     steps: "1. Qo'llarni yelka kengligida polga qo'ying. 2. Tanani to'g'ri chiziq bo'ylab ushlab, ko'krak erga teyguncha pastga tushing. 3. Nafas chiqarib, boshlang'ich holatga qayting.",
-    biomechanicsTip: "Tirsaklarni yon tomonga juda yoyib yubormang (45 gradus burchak ostida saqlang), bu yelka bo'g'imlarini jarohatlanishdan asraydi."
+    biomechanicsTip: "Tirsaklarni yon tomonga juda yoyib yubormang (45 gradus burchak ostida saqlang), bu yelka bo'g'imlarini jarohatlanishdan asraydi.",
+    alternatives: "Jjim lyotja (Bench Press), Gantellar bilan ko'krakka ishlash"
   },
   {
     id: 'benchpress',
@@ -63,7 +64,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1534438327276-14e5300c3a48",
     sets: "4 set x 8-10 marta",
     steps: "1. Skameykaga yoting, shtangani yelkadan kengroq ushlang. 2. Shtangani ko'krak o'rtasiga sekin tushiring. 3. Kuchli harakat bilan shtangani yuqoriga ko'taring.",
-    biomechanicsTip: "Oyoqlaringiz erga mahkam tayanib tursin. Harakat davomida ko'krak qafasini biroz yuqoriga ko'taring (ko'prik qiling) va kuraklarni birlashtiring."
+    biomechanicsTip: "Oyoqlaringiz erga mahkam tayanib tursin. Harakat davomida ko'krak qafasini biroz yuqoriga ko'taring (ko'prik qiling) va kuraklarni birlashtiring.",
+    alternatives: "Gantellar bilan jjim, Otjimaniya (og'irlik bilan)"
   },
   {
     id: 'chest_dips',
@@ -73,7 +75,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1581009146145-b5ef050c2e1e",
     sets: "3 set x 10-12 marta",
     steps: "1. Brusga chiqing. 2. Tanani biroz oldinga egib, tirsaklarni 90 darajagacha buking va pastga tushing. 3. Qo'llarni to'g'rilab yuqoriga ko'taring.",
-    biomechanicsTip: "Tirsaklar chetga qarab ketmasin va tanani o'ta ko'p silkintirmang."
+    biomechanicsTip: "Tirsaklar chetga qarab ketmasin va tanani o'ta ko'p silkintirmang.",
+    alternatives: "Nishabli skameykada jjim, Krossoverda ishlash"
   },
   {
     id: 'pullups',
@@ -83,7 +86,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1526506118085-60ce8714f8c5",
     sets: "4 set x 8-12 marta",
     steps: "1. Turnikdan yelkadan kengroq ushlab osiling. 2. Kuraklarni birlashtirib, iyak turnik to'sinidan o'tguncha tanangizni yuqoriga torting. 3. Sekin va nazorat ostida pastga tushing.",
-    biomechanicsTip: "Faqat qo'l bilan emas, orqa mushaklari bilan tortilishga e'tibor bering. Yelkalarni yuqorida qisib qolishiga yo'l qo'ymang."
+    biomechanicsTip: "Faqat qo'l bilan emas, orqa mushaklari bilan tortilishga e'tibor bering. Yelkalarni yuqorida qisib qolishiga yo'l qo'ymang.",
+    alternatives: "Tyaga sverxu (Blok tortish), Gantel tortish"
   },
   {
     id: 'dumbbell_row',
@@ -93,7 +97,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1605296867304-46d5465a25f1",
     sets: "3 set x 10-12 marta",
     steps: "1. Bir tizza va qo'l bilan skameykaga tayaning, ikkinchi qo'lda gantel bo'lsin. 2. Gantelni bel tomonga torting (tirsakni yuqoriga ko'taring). 3. Gantelni sekin pastga tushiring.",
-    biomechanicsTip: "Harakatning eng yuqori nuqtasida orqa mushagini 1 soniya davomida siqib turing."
+    biomechanicsTip: "Harakatning eng yuqori nuqtasida orqa mushagini 1 soniya davomida siqib turing.",
+    alternatives: "Shtanga tortish, Trenajyorda eshkak eshish"
   },
   {
     id: 'squats',
@@ -103,7 +108,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1574680096145-d05b474e2155",
     sets: "4 set x 10-12 marta",
     steps: "1. Shtangani yelka ortiga qo'yib, oyoqlarni yelka kengligida turing. 2. Dumbingizni orqaga chiqarib, tizzalar 90 daraja burchak hosil qilguncha o'tiring. 3. Oyoqlar bilan erdan itarilib, tik turing.",
-    biomechanicsTip: "O'tirganda tizzalaringiz oyoq uchi chizig'idan o'tib ketmasligiga e'tibor bering. Orqangizni doimo tekis ushlang."
+    biomechanicsTip: "O'tirganda tizzalaringiz oyoq uchi chizig'idan o'tib ketmasligiga e'tibor bering. Orqangizni doimo tekis ushlang.",
+    alternatives: "Jjim nogami (Oyoq bilan itarish), Gantellar bilan cho'qqayish"
   },
   {
     id: 'lunges',
@@ -113,7 +119,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1507398941214-572c25f4b1dc",
     sets: "3 set x 12 marta (har bir oyoqqa)",
     steps: "1. Tik turing, bir oyoq bilan oldinga katta qadam tashlang. 2. Orqa tizza erga tegguncha pastga tushing. 3. Oldingi oyoq yordamida boshlang'ich holatga qayting.",
-    biomechanicsTip: "Tana doimo tik tursin, oldinga egilib ketmang."
+    biomechanicsTip: "Tana doimo tik tursin, oldinga egilib ketmang.",
+    alternatives: "Bolgar cho'qqayishi, Trenajyorda oyoq yoyish"
   },
   {
     id: 'bicep_curls',
@@ -123,7 +130,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1581009146145-b5ef050c2e1e",
     sets: "3-4 set x 12-15 marta",
     steps: "1. Gantellarni yoningizda ushlab turing. 2. Tirsaklarni qo'zg'atmasdan, gantellarni yelkaga qarab ko'taring. 3. Sekin boshlang'ich holatga tushiring.",
-    biomechanicsTip: "Harakat davomida tirsaklaringizni oldinga yoki orqaga qimirlatmang, ularni tanangizga mahkamlang."
+    biomechanicsTip: "Harakat davomida tirsaklaringizni oldinga yoki orqaga qimirlatmang, ularni tanangizga mahkamlang.",
+    alternatives: "Blokda yon tomonga tortish, Trenajyorda yelka ko'tarish"
   },
   {
     id: 'tricep_pushdowns',
@@ -133,7 +141,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1541534741688-6078c6bfb5c5",
     sets: "3 set x 12-15 marta",
     steps: "1. Blok arqonini ushlang, tirsaklar tanaga yopishgan bo'lsin. 2. Arqonni tirsaklarni to'liq ochib, pastga bosing. 3. Arqonni ko'krak darajasigacha sekin qaytaring.",
-    biomechanicsTip: "Harakat faqat tirsak bo'g'imida bo'lishi kerak. Yelkalaringizni qimirlatmang."
+    biomechanicsTip: "Harakat faqat tirsak bo'g'imida bo'lishi kerak. Yelkalaringizni qimirlatmang.",
+    alternatives: "Fransuzcha jjim, Gantel bilan orqaga itarish"
   },
   {
     id: 'dumbbell_press',
@@ -143,7 +152,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1574680100466-9a2c3a7a92fb",
     sets: "3 set x 10-12 marta",
     steps: "1. Skameykaga o'tiring, gantellarni quloq ro'parasida ushlang. 2. Gantellarni tepaga, bir-biriga yaqinlashtirib ko'taring. 3. Sekin quloq ro'parasiga qaytaring.",
-    biomechanicsTip: "Orqangiz skameykaga mahkam tegib tursin, belingizni haddan tashqari bukib yubormang."
+    biomechanicsTip: "Orqangiz skameykaga mahkam tegib tursin, belingizni haddan tashqari bukib yubormang.",
+    alternatives: "Shtanga bilan biceps, Shtangani teskari ushlash"
   },
   {
     id: 'crunches',
@@ -153,7 +163,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1517838277536-f5f99be501cd",
     sets: "4 set x 15-20 marta",
     steps: "1. Orqa bilan yerga yoting, tizzalarni buking. 2. Qo'llarni bosh ortiga qo'yib, faqat kuraklarni yerdan uzib ko'taring. 3. Qorin mushaklarini siqib, sekin yerga qayting.",
-    biomechanicsTip: "Boshni qo'llar bilan tortmang, butun kuch qorin mushaklariga tushishi kerak."
+    biomechanicsTip: "Boshni qo'llar bilan tortmang, butun kuch qorin mushaklariga tushishi kerak.",
+    alternatives: "Oyoqlarni ko'tarish (vissda), Velosiped mashqi"
   },
   {
     id: 'plank',
@@ -163,7 +174,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1571019613576-2b22c76fd955",
     sets: "3 set x 60 soniya",
     steps: "1. Tirsaklar va oyoq uchlariga tayanib turing. 2. Tana boshdan to tovongacha tekis to'g'ri chiziq hosil qilishi lozim. 3. Usbhu holatda qorinni qattiq tortib ushlang.",
-    biomechanicsTip: "Belingiz pastga tushib ketmasligiga yoki dumbangiz juda ko'tarilib ketmasligiga e'tibor bering."
+    biomechanicsTip: "Belingiz pastga tushib ketmasligiga yoki dumbangiz juda ko'tarilib ketmasligiga e'tibor bering.",
+    alternatives: "Yon plank, Rolikda qorin ishlash"
   },
   {
     id: 'neck_extension',
@@ -173,7 +185,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1544367567-0f2fcb009e0b",
     sets: "3 set x 12-15 marta",
     steps: "1. Qo'llaringizni orqaga yoki peshonaga tayab, boshni sekin qarshilik bilan oldinga-orqaga harakatlantiring. 2. Harakatni o'ta sekin va nazorat ostida bajaring.",
-    biomechanicsTip: "Haddan tashqari keskin harakatlar qilmang. Bo'yin umurtqalari juda nozik bo'lgani sababli, yuklamani o'ta ehtiyotkorlik bilan berish lozim."
+    biomechanicsTip: "Haddan tashqari keskin harakatlar qilmang. Bo'yin umurtqalari juda nozik bo'lgani sababli, yuklamani o'ta ehtiyotkorlik bilan berish lozim.",
+    alternatives: "Boshga og'irlik bog'lab ishlash, Izometrik mashqlar"
   },
   {
     id: 'calf_raises',
@@ -183,7 +196,8 @@ const EXERCISES_DATABASE = [
     unsplashId: "photo-1596464716127-f2a82984de30",
     sets: "4 set x 15-20 marta",
     steps: "1. Biror balandlik chetida turing (tovonlar osilib tursin). 2. Oyoq uchlarida iloji boricha yuqoriga ko'taring. 3. Tovonlarni maksimal pastga tushirib boldirni cho'zing.",
-    biomechanicsTip: "Harakatning eng yuqori nuqtasida boldirlarni 1 soniya qisib turing. Pastga tushayotganda sekin, sakrashlarsiz nazorat bilan tushing."
+    biomechanicsTip: "Harakatning eng yuqori nuqtasida boldirlarni 1 soniya qisib turing. Pastga tushayotganda sekin, sakrashlarsiz nazorat bilan tushing.",
+    alternatives: "O'tirgan holda boldir ishlash, Jjim nogami uskunasida boldir"
   }
 ];
 
@@ -1541,6 +1555,10 @@ function renderWorkoutGuide() {
           <span class="guide-meta-item" title="Tavsiya etilgan yuklama"><i data-lucide="repeat"></i> <span class="guide-meta-val">${ex.sets}</span></span>
           <span class="guide-meta-item btn-bio-tip" style="cursor:pointer;color:var(--accent-green);font-weight:600;" data-name="${escapeHTML(ex.name)}" data-tip="${escapeHTML(ex.biomechanicsTip)}"><i data-lucide="shield-alert"></i> Bio-Maslahat</span>
         </div>
+        ${ex.alternatives ? `
+        <div class="guide-card-alternatives" style="margin-top: 12px; font-size: 0.75rem; color: var(--text-sub); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+          <strong style="color:var(--accent-orange);"><i data-lucide="refresh-cw" style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"></i> Analoglari:</strong> ${ex.alternatives}
+        </div>` : ''}
       </div>
     `;
     container.appendChild(card);
@@ -1584,13 +1602,14 @@ function renderAnatomyProfile() {
     const ex = EXERCISES_DATABASE.find(e => e.id === exId);
     if (ex) {
       exercisesHtml += `
-        <div class="anatomy-exercise-card">
+        <div class="anatomy-exercise-card card btn-bio-tip" data-name="${escapeHTML(ex.name)}" data-tip="${escapeHTML(ex.biomechanicsTip)}" style="cursor:pointer;">
           <img src="https://images.unsplash.com/${ex.unsplashId}?auto=format&fit=crop&w=120&q=80" alt="${ex.name}" class="anatomy-exercise-img" onerror="this.src='icons/icon-192.png'">
           <div class="anatomy-exercise-details">
             <span class="anatomy-exercise-name">${ex.name}</span>
-            <span class="anatomy-exercise-sets">${ex.sets}</span>
-            <span class="anatomy-exercise-tip"><strong style="color:var(--accent-green)">Texnika:</strong> ${ex.biomechanicsTip}</span>
+            <span class="anatomy-exercise-meta">${ex.sets}</span>
+            ${ex.alternatives ? `<span class="anatomy-exercise-meta" style="color:var(--accent-orange); font-size: 0.72rem; margin-top:4px;"><i data-lucide="refresh-cw" style="width:10px; height:10px; display:inline-block;"></i> Analog: ${ex.alternatives}</span>` : ''}
           </div>
+          <i data-lucide="chevron-right" class="anatomy-exercise-icon"></i>
         </div>
       `;
     }
